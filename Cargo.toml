@@ -1,0 +1,4 @@
+[workspace]
+members = ["crates/shot-runner"]
+resolver = "2"
+
