@@ -6,8 +6,9 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {chromium} from 'playwright';
 
 const port = 4174;
-const origin = `http://127.0.0.1:${port}`;
-const vite = spawn(process.execPath, [
+const localOrigin = `http://127.0.0.1:${port}`;
+const origin = (process.env.TEST_URL || localOrigin).replace(/\/$/, '');
+const vite = process.env.TEST_URL ? null : spawn(process.execPath, [
   resolve('node_modules/vite/bin/vite.js'),
   'preview',
   '--config', 'site/vite.config.js',
@@ -15,7 +16,7 @@ const vite = spawn(process.execPath, [
   '--port', String(port),
   '--strictPort',
 ], {stdio: 'ignore'});
-const viteExited = once(vite, 'exit');
+const viteExited = vite && once(vite, 'exit');
 
 async function waitForServer() {
   for (let attempt = 0; attempt < 50; attempt += 1) {
@@ -70,6 +71,6 @@ try {
   await browser.close();
   console.log('PWA license-cache security regression passed');
 } finally {
-  vite.kill('SIGTERM');
-  await viteExited.catch(() => {});
+  vite?.kill('SIGTERM');
+  await viteExited?.catch(() => {});
 }
