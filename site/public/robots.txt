@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://animation-shot-runner.sociobot.in/sitemap.xml

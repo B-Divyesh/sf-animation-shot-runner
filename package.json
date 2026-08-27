@@ -1,0 +1,20 @@
+{
+  "name": "animation-shot-runner-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config site/vite.config.js",
+    "test": "cargo test --workspace && node site/tests/site.test.mjs",
+    "build:cli": "cargo build --release --locked",
+    "build:site": "vite build --config site/vite.config.js",
+    "build": "npm run build:cli && npm run build:site",
+    "pack:cli": "cargo package --manifest-path crates/shot-runner/Cargo.toml --allow-dirty",
+    "test:a11y": "node site/tests/a11y.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "playwright": "^1.58.2",
+    "vite": "^7.1.3"
+  }
+}
