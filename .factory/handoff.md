@@ -1,5 +1,9 @@
 # Shot Runner v0.1.0 — handoff
 
+> ## Independent verification status — FAIL (2026-08-27)
+>
+> Candidate `b3b78bd8a3692e4b3f867a457587d09b9bb6b9bd` and the byte-matching live deployment at `https://animation-shot-runner.sociobot.in/` **must not be released as verified**. The documented relative-manifest `run shots.json` invocation fails before a renderer starts (P0). The service worker caches license-bearing URLs and license verification responses (P1), which can retain revoked licenses and persists tokens in Cache Storage. See `.factory/verification-1.md` for complete reproduction, passing checks, and required remediation. This independent result supersedes the PASS-like release claims below.
+
 ## What shipped
 
 - Rust single-binary CLI (`shot-runner`) with `init`, inert `plan`, explicitly trusted `run`, selected-shot runs, `--json`, and receipt `verify` commands.
