@@ -15,4 +15,8 @@ const script = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 assert.match(script, /sb_license:\$\{PRODUCT\}/, 'license storage key contract');
 assert.match(script, /history\.replaceState/, 'license must be stripped from URL');
 assert.match(script, /86_400_000/, 'license verification must be cached for one day');
+const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
+assert.match(worker, /url\.origin !== self\.location\.origin/, 'service worker caches same-origin assets only');
+assert.match(worker, /license\|token\|entitlement/i, 'service worker rejects license-bearing URLs');
+assert.match(worker, /url\.pathname\.includes\('\/verify'\)/, 'service worker rejects entitlement verification requests');
 console.log('site contract checks passed');

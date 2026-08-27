@@ -244,7 +244,12 @@ pub fn run(
             )));
         }
     }
-    let base = path.parent().unwrap_or_else(|| Path::new("."));
+    // `Path::parent()` returns an empty path for a bare filename such as
+    // `shots.json`. Passing that empty path to `Command::current_dir` fails on
+    // supported platforms, even though it denotes the current directory for
+    // joins. Normalize it once so the documented invocation works and every
+    // manifest-relative path has the same, explicit base directory.
+    let base = manifest_directory(path);
     let cache_root = cache_override
         .map(PathBuf::from)
         .unwrap_or_else(|| base.join(".shot-runner/cache"));
@@ -437,6 +442,13 @@ fn safe_join(base: &Path, relative: &Path) -> Result<PathBuf, RunnerError> {
         )));
     }
     Ok(base.join(relative))
+}
+
+fn manifest_directory(path: &Path) -> &Path {
+    match path.parent() {
+        Some(parent) if !parent.as_os_str().is_empty() => parent,
+        _ => Path::new("."),
+    }
 }
 
 fn expand_command(

@@ -51,6 +51,8 @@ shot-runner verify previews/sq010-door/receipt.json --json
 
 `plan` never executes commands. `run` refuses executable names that are not explicitly allowlisted and refuses to run without `--yes`; this is deliberate protection against untrusted manifests and works predictably in CI. A successful run writes `contact-sheet.png`, a copied frame sequence, and `receipt.json` under the manifest's output directory. Re-running unchanged inputs uses the content-addressed local cache.
 
+For `shot-runner run shots.json`, the manifest directory is the current directory: relative sources, output, cache, and renderer working directory all resolve there. This is also true when the manifest is in a named relative directory such as `project/shots.json`.
+
 Exit codes: `0` success, `2` manifest/usage error, `3` trust denied, `4` renderer failed, `5` output or verification failed.
 
 ## Develop and verify

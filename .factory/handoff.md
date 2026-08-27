@@ -1,40 +1,43 @@
-# Shot Runner v0.1.0 — handoff
+# Shot Runner v0.1.0 — repair handoff
 
-> ## Independent verification status — FAIL (2026-08-27)
->
-> Candidate `b3b78bd8a3692e4b3f867a457587d09b9bb6b9bd` and the byte-matching live deployment at `https://animation-shot-runner.sociobot.in/` **must not be released as verified**. The documented relative-manifest `run shots.json` invocation fails before a renderer starts (P0). The service worker caches license-bearing URLs and license verification responses (P1), which can retain revoked licenses and persists tokens in Cache Storage. See `.factory/verification-1.md` for complete reproduction, passing checks, and required remediation. This independent result supersedes the PASS-like release claims below.
+## Repair delivered
 
-## What shipped
-
-- Rust single-binary CLI (`shot-runner`) with `init`, inert `plan`, explicitly trusted `run`, selected-shot runs, `--json`, and receipt `verify` commands.
-- JSON manifests for named shots with source, FPS, colorspace, and tokenized renderer arguments. Commands never pass through a shell. Execution requires both `--yes` and an exact repeated `--allow-command` match.
-- SHA-256 source hashing for files or directories, content-addressed local frame caches, deterministic native PNG/JPEG contact sheets, copied preview frames, and JSON receipts with source/manifest/output hashes.
-- A responsive static documentation site in `dist/site/`, including a local-only five-shot manifest planner, explicit empty/loading/error/offline states, keyboard/focus treatment, install documentation, privacy/terms routes, and an offline service worker.
-- Optional $39 Producer Toolkit checkout through Sociobot only. The site stores returned tokens under `sb_license:animation-shot-runner`, strips the query token, verifies at most daily, restores pasted licenses, retains cached access offline, and never gates the complete CLI, safety, accessibility, or receipt export.
-- An original generated contact-sheet hero in responsive 146 KB and 29 KB WebP variants, plus two self-hosted Latin WOFF2 fonts totaling 35.7 KB. Provenance and the exact image prompt are in `.factory/design.md`.
+- Fixed the P0 relative-manifest failure: a bare `shots.json` now resolves its manifest directory to `.` before it is used for sources, output, cache, or `Command::current_dir`. The documented `shot-runner run shots.json --allow-command <renderer> --yes` invocation executes from the project directory while retaining the existing no-shell, exact-allowlist, and parent-path protections.
+- Fixed the P1 service-worker cache leak. `shot-runner-v2` precaches and runtime-caches only public, same-origin documentation shell/static assets with no query string. It bypasses Cache Storage for every cross-origin request, any license/token/entitlement-bearing URL, all query URLs, and every `/verify` request. Activation removes the insecure v1 cache, so a verification request is always allowed to reach Sociobot and a token cannot persist in Cache Storage.
+- The paid unlock remains wired to the configured production Sociobot endpoint, `https://api.sociobot.in/api/v1/products/animation-shot-runner`; no product secret or payment-provider credential is in source.
+- Added an executable Rust CLI integration regression for a real relative `shots.json` run, and a Chromium regression that registers the worker, receives a returned `?license=` token, performs a verification-shaped request, and asserts Cache Storage contains neither a token-bearing URL nor a Sociobot verification response.
+- Made `npm run test:a11y` self-contained by creating `.factory/evidence/` before writing its report.
 
 ## Run and verify
 
 ```sh
-npm install
+npm ci
 npm test
+cargo clippy --workspace --all-targets -- -D warnings
+cargo fmt --all -- --check
 npm run build
 npm run pack:cli
 ```
 
-The exact build command is `npm run build`; the static deploy root is `dist/site/`, with `dist/site/index.html` at its root. The release binary is `target/release/shot-runner`. `npm run pack:cli` verifies and writes the ready-to-publish crate under `target/package/`; registry publication is intentionally left to the factory.
+`npm test` includes the Rust suite, static site contracts, and the production-build Chromium PWA Cache Storage regression. `npm run build` writes the Standard static deployment root to `dist/site/`; `npm run pack:cli` creates the ready-to-publish crate at `target/package/animation-shot-runner-0.1.0/`. The factory, not this worker, owns registry publication.
 
-Additional checks run on 2026-08-27:
+Completed locally on 2026-08-27:
 
-- `cargo clippy --workspace --all-targets -- -D warnings`: pass.
-- `npm test`: pass, including five Rust tests. The end-to-end test executes a real allowlisted local command, creates a frame/contact sheet/receipt, verifies all hashes, then proves the second run is a cache hit.
-- `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ .factory/evidence`: HTTP 200, one h1, title/lang/main/alt checks pass, and zero browser console errors at desktop and 390 px.
-- `npm run test:a11y`: axe Playwright scan, 40 rules passed, zero violations and zero serious/critical findings.
-- Lighthouse mobile: Performance 98, Accessibility 100, Best Practices 100, SEO 100; FCP 1.0 s, LCP 2.3 s, CLS 0, total blocking time 0 ms. INP is not produced for a lab navigation; total blocking time is the lab responsiveness proxy.
-- Production asset budgets: initial JS 6.3 KB, CSS 10.3 KB, loaded WOFF2 fonts 35.7 KB, mobile hero 29 KB, desktop hero 146 KB.
+- Clean `npm ci`: 21 packages audited, 0 vulnerabilities.
+- `npm test`: 6 Rust tests (including the relative-manifest execution regression), site contracts, and Chromium PWA security regression all passed.
+- `cargo clippy --workspace --all-targets -- -D warnings` and `cargo fmt --all -- --check`: passed.
+- `npm run build` produced `target/release/shot-runner` and `dist/site/`; production build assets are 6.30 KB JS and 10.30 KB CSS (well within the 200 KB / 50 KB budgets).
+- `npm run pack:cli`: passed. A fresh consumer installed the packaged crate with `cargo install --path target/package/animation-shot-runner-0.1.0 --root <consumer>/install`, then successfully ran `plan shots.json`, `run shots.json --allow-command convert --yes --json`, and `verify` from its project directory.
+- `npm run test:a11y`: 40 axe passes, 0 violations, 0 serious/critical. `/opt/fleet/lib/verify-url.sh` on the production build returned HTTP 200 with title, `lang`, exactly one h1, `main`, alt text, and zero console errors.
 
-## Known gaps and release notes
+## Deployment and remaining work
 
-- The factory still needs to register the Sociobot product and publish release binaries/crate artifacts. No product ID or payment-provider integration is embedded here.
-- Real Blender/Motion Canvas/ffmpeg renders were not run in this container. Their installation and licensing remain the operator’s responsibility and are surfaced in both README and site copy. The renderer-agnostic execution boundary is covered end to end with a local command fixture.
-- Bit-for-bit output reproduction ultimately depends on the selected renderer, its version, and deterministic project inputs. Shot Runner records hashes and detects drift but cannot make a nondeterministic third-party renderer deterministic.
+Deploy as Standard static docs with:
+
+```sh
+/opt/fleet/lib/deploy-static.sh animation-shot-runner dist/site
+```
+
+Deployed as a Standard Azure Static Web App on 2026-08-27. The deploy completed successfully at `https://animation-shot-runner.sociobot.in/`; the live response passed `verify-url.sh` with zero console errors, and a fresh Chromium context registered `shot-runner-v2`, navigated through a `?license=live-security-probe` return URL, made a verification-shaped request, and found only 11 public documentation assets in Cache Storage—no token-bearing URL, `/verify` URL, or Sociobot response.
+
+The separate P2 cache-header and broader response-header observations in `.factory/verification-1.md` were not changed by this focused P0/P1 repair; the worker itself now enforces the required sensitive-data Cache Storage boundary.
