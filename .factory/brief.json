@@ -1,0 +1,11 @@
+{
+  "slug": "animation-shot-runner",
+  "title": "Shot Runner",
+  "territory": "games-creative",
+  "user": "Small animation teams and technical artists who need repeatable preview renders for named shots without driving a browser UI or maintaining a full studio pipeline.",
+  "smallest_useful_product": "Local CLI reading a shot manifest, invoking allowlisted renderer commands, caching frame sequences, producing contact sheets and a JSON receipt with source hash/fps/colorspace.",
+  "success_measure": "A pilot renders five named shots from one command and can reproduce a selected preview bit-for-bit after a clean checkout.",
+  "artifact_class": "cli",
+  "monetization": "one-time",
+  "constraints": "Never execute commands from untrusted manifests without confirmation; clearly surface renderer licensing and local ffmpeg requirements; store no media remotely."
+}
