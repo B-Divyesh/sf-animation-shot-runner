@@ -49,9 +49,18 @@ shot-runner run shots.json --shot sq010-door --allow-command blender --yes --jso
 shot-runner verify previews/sq010-door/receipt.json --json
 ```
 
-`plan` never executes commands. `run` refuses executable names that are not explicitly allowlisted and refuses to run without `--yes`; this is deliberate protection against untrusted manifests and works predictably in CI. A successful run writes `contact-sheet.png`, a copied frame sequence, and `receipt.json` under the manifest's output directory. Re-running unchanged inputs uses the content-addressed local cache.
+`plan` never executes commands. It prints both the manifest token vector and the exact expanded `run argv` vector that `run` will pass to the renderer, including every argument and the resolved `{source}`, `{frames}`, `{shot}`, and `{cache}` values. JSON plan output exposes these as `command` and `argv`. Review the complete `run argv` for every shot before passing `--yes`.
 
-For `shot-runner run shots.json`, the manifest directory is the current directory: relative sources, output, cache, and renderer working directory all resolve there. This is also true when the manifest is in a named relative directory such as `project/shots.json`.
+The expansion is a snapshot of the source content and cache location. If either changes after review, run `plan` again. When using a custom cache location, pass the same option to both commands so the reviewed vector stays identical:
+
+```sh
+shot-runner plan shots.json --cache-dir .cache
+shot-runner run shots.json --cache-dir .cache --allow-command blender --yes
+```
+
+`run` refuses executable names that are not explicitly allowlisted and refuses to run without `--yes`; this is deliberate protection against untrusted manifests and works predictably in CI. A successful run writes `contact-sheet.png`, a copied frame sequence, and `receipt.json` under the manifest's output directory. Re-running unchanged inputs uses the content-addressed local cache. The receipt records the exact argv that ran, making review/execution parity auditable.
+
+For `shot-runner run shots.json`, the manifest directory is the current directory: relative sources, output, cache, and renderer working directory all resolve there. This is also true when the manifest is in a named relative directory such as `project/shots.json`; displayed command paths are resolved to absolute paths so the renderer sees the same files from that working directory.
 
 Exit codes: `0` success, `2` manifest/usage error, `3` trust denied, `4` renderer failed, `5` output or verification failed.
 

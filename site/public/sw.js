@@ -1,14 +1,14 @@
-const CACHE = 'shot-runner-v2';
+const CACHE = 'shot-runner-v3';
 const SHELL = [
   '/',
   '/index.html',
   '/privacy/',
   '/terms/',
   '/favicon.svg',
-  '/shot-proof.webp',
-  '/shot-proof-768.webp',
-  '/fonts/instrument-serif.woff2',
-  '/fonts/ibm-plex-mono.woff2',
+  '/shot-proof-e5786fb0.webp',
+  '/shot-proof-768-97c150b8.webp',
+  '/fonts/instrument-serif-5eb09b5a.woff2',
+  '/fonts/ibm-plex-mono-08949f72.woff2',
 ];
 const SHELL_PATHS = new Set(SHELL);
 const SENSITIVE_URL_PART = /license|token|entitlement/i;

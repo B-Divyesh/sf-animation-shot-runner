@@ -24,12 +24,18 @@ enum Commands {
         #[arg(default_value = "shots.json", help = "Path for the new JSON manifest")]
         path: PathBuf,
     },
-    /// Validate and show commands without executing them
+    /// Validate and show every token plus the exact expanded argv without executing
     Plan {
         #[arg(help = "Manifest to validate")]
         manifest: PathBuf,
         #[arg(long, help = "Plan only this named shot")]
         shot: Option<String>,
+        #[arg(
+            long,
+            value_name = "DIRECTORY",
+            help = "Use this cache directory when expanding argv; pass the same value to run"
+        )]
+        cache_dir: Option<PathBuf>,
     },
     /// Execute reviewed commands and write previews plus receipts
     Run {
@@ -118,8 +124,12 @@ fn execute(cli: &Cli) -> Result<(), RunnerError> {
                 );
             }
         }
-        Commands::Plan { manifest, shot } => {
-            let items = plan(manifest, shot.as_deref())?;
+        Commands::Plan {
+            manifest,
+            shot,
+            cache_dir,
+        } => {
+            let items = plan(manifest, shot.as_deref(), cache_dir.as_deref())?;
             print_value(&items, cli.json, |items| {
                 println!("REVIEW  {} command(s)", items.len());
                 for i in items {
@@ -127,6 +137,15 @@ fn execute(cli: &Cli) -> Result<(), RunnerError> {
                         "  {:<24} {}  {} fps  {}",
                         i.name, i.executable, i.fps, i.colorspace
                     );
+                    println!(
+                        "    manifest argv: {}",
+                        serde_json::to_string(&i.command).expect("plan command serializes")
+                    );
+                    println!(
+                        "    run argv:      {}",
+                        serde_json::to_string(&i.argv).expect("plan argv serializes")
+                    );
+                    println!("    frames:        {}", i.frames_directory);
                 }
                 println!("No commands executed.");
             })?;

@@ -43,7 +43,7 @@ if (editor && planButton && output && status) {
         status.textContent = 'READY';
         status.className = 'status success';
         output.className = 'planned';
-        output.innerHTML = `<div class="plan-summary"><strong>${escapeHtml(data.shots.length)} shots ready</strong><span>${escapeHtml(data.project)} / ${escapeHtml(commands.join(', '))}</span></div><ol>${data.shots.map((shot, index) => `<li><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(shot.name)}</strong><small>${escapeHtml(shot.fps)} FPS · ${escapeHtml(shot.colorspace)} · ${escapeHtml(shot.source)}</small></div><b>HELD</b></li>`).join('')}</ol><p class="trust-note">Nothing ran. In the CLI, continue only after review:<br><code>shot-runner run shots.json --allow-command ${escapeHtml(commands[0])} --yes</code></p>`;
+        output.innerHTML = `<div class="plan-summary"><strong>${escapeHtml(data.shots.length)} shots ready</strong><span>${escapeHtml(data.project)} / ${escapeHtml(commands.join(', '))}</span></div><ol>${data.shots.map((shot, index) => `<li><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(shot.name)}</strong><small>${escapeHtml(shot.fps)} FPS · ${escapeHtml(shot.colorspace)} · ${escapeHtml(shot.source)}</small><code class="argv">${escapeHtml(JSON.stringify(shot.command))}</code></div><b>HELD</b></li>`).join('')}</ol><p class="trust-note">Nothing ran. This browser proof shows every manifest token but cannot resolve your local paths. In the CLI, review its exact expanded <code>run argv</code>, then continue:<br><code>shot-runner run shots.json --allow-command ${escapeHtml(commands[0])} --yes</code></p>`;
       } catch (error) {
         status.textContent = 'ERROR';
         status.className = 'status danger';

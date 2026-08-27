@@ -75,9 +75,18 @@ pub struct Shot {
 pub struct PlanItem {
     pub name: String,
     pub executable: String,
+    /// The unexpanded, tokenized vector from the manifest.
+    pub command: Vec<String>,
+    /// The exact argv vector `run` will pass to the renderer when the cache
+    /// is cold. Paths are absolute so the vector remains correct when the
+    /// renderer runs from the manifest directory.
+    pub argv: Vec<String>,
     pub source: String,
+    pub source_path: String,
     pub fps: f64,
     pub colorspace: String,
+    pub cache_directory: String,
+    pub frames_directory: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -203,23 +212,25 @@ fn validate_manifest(manifest: &Manifest) -> Result<(), RunnerError> {
                 shot.name
             )));
         }
+        if contains_placeholder(&shot.command[0]) {
+            return Err(RunnerError::manifest(format!(
+                "executable for {} must not contain placeholders",
+                shot.name
+            )));
+        }
     }
     Ok(())
 }
 
-pub fn plan(path: &Path, selected: Option<&str>) -> Result<Vec<PlanItem>, RunnerError> {
+pub fn plan(
+    path: &Path,
+    selected: Option<&str>,
+    cache_override: Option<&Path>,
+) -> Result<Vec<PlanItem>, RunnerError> {
     let (manifest, _) = load_manifest(path)?;
-    let shots = select_shots(&manifest, selected)?;
-    Ok(shots
-        .into_iter()
-        .map(|shot| PlanItem {
-            name: shot.name.clone(),
-            executable: shot.command[0].clone(),
-            source: shot.source.display().to_string(),
-            fps: shot.fps,
-            colorspace: shot.colorspace.clone(),
-        })
-        .collect())
+    let base = manifest_directory(path)?;
+    let prepared = prepare_shots(&manifest, &base, selected, cache_override)?;
+    Ok(prepared.iter().map(PreparedShot::plan_item).collect())
 }
 
 pub fn run(
@@ -230,70 +241,43 @@ pub fn run(
     cache_override: Option<&Path>,
 ) -> Result<RunSummary, RunnerError> {
     let (manifest, manifest_hash) = load_manifest(path)?;
-    let shots = select_shots(&manifest, selected)?;
+    let base = manifest_directory(path)?;
+    let prepared = prepare_shots(&manifest, &base, selected, cache_override)?;
     if !confirmed {
         return Err(RunnerError::trust(
             "refusing to execute manifest commands without --yes; inspect `shot-runner plan` first",
         ));
     }
-    for shot in &shots {
-        if !allowed.iter().any(|item| item == &shot.command[0]) {
+    for shot in &prepared {
+        if !allowed.iter().any(|item| item == &shot.shot.command[0]) {
             return Err(RunnerError::trust(format!(
                 "command {:?} is not allowed; pass --allow-command {:?} after reviewing the plan",
-                shot.command[0], shot.command[0]
+                shot.shot.command[0], shot.shot.command[0]
             )));
         }
     }
-    // `Path::parent()` returns an empty path for a bare filename such as
-    // `shots.json`. Passing that empty path to `Command::current_dir` fails on
-    // supported platforms, even though it denotes the current directory for
-    // joins. Normalize it once so the documented invocation works and every
-    // manifest-relative path has the same, explicit base directory.
-    let base = manifest_directory(path);
-    let cache_root = cache_override
-        .map(PathBuf::from)
-        .unwrap_or_else(|| base.join(".shot-runner/cache"));
-    let output_root = safe_join(base, &manifest.output)?;
+    let output_root = safe_join(&base, &manifest.output)?;
     let mut summary = RunSummary {
         project: manifest.project.clone(),
         rendered: 0,
         cache_hits: 0,
         receipts: vec![],
     };
-    for shot in shots {
-        let source_path = safe_join(base, &shot.source)?;
-        if !source_path.exists() {
-            return Err(RunnerError::manifest(format!(
-                "source for {} does not exist: {}",
-                shot.name,
-                source_path.display()
-            )));
-        }
-        let source_hash = hash_path(&source_path)?;
-        let config = serde_json::to_vec(shot).map_err(|e| RunnerError::manifest(e.to_string()))?;
-        let cache_key = hash_many(&[source_hash.as_bytes(), &config]);
-        let cache_dir = cache_root.join(&cache_key);
-        let frames_dir = cache_dir.join("frames");
-        fs::create_dir_all(&frames_dir)
+    for prepared_shot in prepared {
+        let shot = prepared_shot.shot;
+        fs::create_dir_all(&prepared_shot.frames_dir)
             .map_err(|e| RunnerError::output(format!("could not create cache: {e}")))?;
-        let mut frames = image_files(&frames_dir)?;
+        let mut frames = image_files(&prepared_shot.frames_dir)?;
         let cache_hit = !frames.is_empty();
-        let expanded = expand_command(
-            &shot.command,
-            &source_path,
-            &frames_dir,
-            &shot.name,
-            &cache_dir,
-        );
         if !cache_hit {
-            let status = Command::new(&expanded[0])
-                .args(&expanded[1..])
-                .current_dir(base)
+            let status = Command::new(&prepared_shot.argv[0])
+                .args(&prepared_shot.argv[1..])
+                .current_dir(&base)
                 .status()
                 .map_err(|e| {
                     RunnerError::renderer(format!(
                         "could not start {:?} for {}: {e}",
-                        expanded[0], shot.name
+                        prepared_shot.argv[0], shot.name
                     ))
                 })?;
             if !status.success() {
@@ -305,12 +289,12 @@ pub fn run(
                         .map_or_else(|| "a signal".into(), |c| c.to_string())
                 )));
             }
-            frames = image_files(&frames_dir)?;
+            frames = image_files(&prepared_shot.frames_dir)?;
             if frames.is_empty() {
                 return Err(RunnerError::output(format!(
                     "renderer for {} produced no PNG or JPEG frames in {}",
                     shot.name,
-                    frames_dir.display()
+                    prepared_shot.frames_dir.display()
                 )));
             }
             summary.rendered += 1;
@@ -342,12 +326,12 @@ pub fn run(
             project: manifest.project.clone(),
             shot: shot.name.clone(),
             source: shot.source.display().to_string(),
-            source_sha256: source_hash,
+            source_sha256: prepared_shot.source_hash,
             manifest_sha256: manifest_hash.clone(),
             fps: shot.fps,
             colorspace: shot.colorspace.clone(),
-            command: expanded,
-            cache_key,
+            command: prepared_shot.argv,
+            cache_key: prepared_shot.cache_key,
             cache_hit,
             created_unix: SystemTime::now()
                 .duration_since(UNIX_EPOCH)
@@ -444,10 +428,102 @@ fn safe_join(base: &Path, relative: &Path) -> Result<PathBuf, RunnerError> {
     Ok(base.join(relative))
 }
 
-fn manifest_directory(path: &Path) -> &Path {
-    match path.parent() {
-        Some(parent) if !parent.as_os_str().is_empty() => parent,
-        _ => Path::new("."),
+struct PreparedShot<'a> {
+    shot: &'a Shot,
+    source_path: PathBuf,
+    source_hash: String,
+    cache_key: String,
+    cache_dir: PathBuf,
+    frames_dir: PathBuf,
+    argv: Vec<String>,
+}
+
+impl PreparedShot<'_> {
+    fn plan_item(&self) -> PlanItem {
+        PlanItem {
+            name: self.shot.name.clone(),
+            executable: self.shot.command[0].clone(),
+            command: self.shot.command.clone(),
+            argv: self.argv.clone(),
+            source: self.shot.source.display().to_string(),
+            source_path: self.source_path.display().to_string(),
+            fps: self.shot.fps,
+            colorspace: self.shot.colorspace.clone(),
+            cache_directory: self.cache_dir.display().to_string(),
+            frames_directory: self.frames_dir.display().to_string(),
+        }
+    }
+}
+
+fn prepare_shots<'a>(
+    manifest: &'a Manifest,
+    base: &Path,
+    selected: Option<&str>,
+    cache_override: Option<&Path>,
+) -> Result<Vec<PreparedShot<'a>>, RunnerError> {
+    let cache_root = cache_directory(base, cache_override)?;
+    select_shots(manifest, selected)?
+        .into_iter()
+        .map(|shot| {
+            let source_path = safe_join(base, &shot.source)?;
+            if !source_path.exists() {
+                return Err(RunnerError::manifest(format!(
+                    "source for {} does not exist: {}",
+                    shot.name,
+                    source_path.display()
+                )));
+            }
+            let source_hash = hash_path(&source_path)?;
+            let config =
+                serde_json::to_vec(shot).map_err(|e| RunnerError::manifest(e.to_string()))?;
+            let cache_key = hash_many(&[source_hash.as_bytes(), &config]);
+            let cache_dir = cache_root.join(&cache_key);
+            let frames_dir = cache_dir.join("frames");
+            let argv = expand_command(
+                &shot.command,
+                &source_path,
+                &frames_dir,
+                &shot.name,
+                &cache_dir,
+            );
+            Ok(PreparedShot {
+                shot,
+                source_path,
+                source_hash,
+                cache_key,
+                cache_dir,
+                frames_dir,
+                argv,
+            })
+        })
+        .collect()
+}
+
+fn manifest_directory(path: &Path) -> Result<PathBuf, RunnerError> {
+    let canonical_manifest = path.canonicalize().map_err(|e| {
+        RunnerError::manifest(format!(
+            "could not resolve manifest {}: {e}",
+            path.display()
+        ))
+    })?;
+    canonical_manifest
+        .parent()
+        .map(Path::to_path_buf)
+        .ok_or_else(|| {
+            RunnerError::manifest(format!(
+                "manifest has no parent directory: {}",
+                path.display()
+            ))
+        })
+}
+
+fn cache_directory(base: &Path, cache_override: Option<&Path>) -> Result<PathBuf, RunnerError> {
+    match cache_override {
+        None => Ok(base.join(".shot-runner/cache")),
+        Some(path) if path.is_absolute() => Ok(path.to_path_buf()),
+        Some(path) => std::env::current_dir()
+            .map(|cwd| cwd.join(path))
+            .map_err(|e| RunnerError::manifest(format!("could not resolve cache directory: {e}"))),
     }
 }
 
@@ -467,6 +543,12 @@ fn expand_command(
                 .replace("{cache}", &cache.to_string_lossy())
         })
         .collect()
+}
+
+fn contains_placeholder(value: &str) -> bool {
+    ["{source}", "{frames}", "{shot}", "{cache}"]
+        .iter()
+        .any(|placeholder| value.contains(placeholder))
 }
 
 fn image_files(dir: &Path) -> Result<Vec<PathBuf>, RunnerError> {
@@ -634,6 +716,12 @@ mod tests {
     }
 
     #[test]
+    fn rejects_placeholder_executables() {
+        let invalid = manifest(vec!["{source}".into()]);
+        assert!(validate_manifest(&invalid).is_err());
+    }
+
+    #[test]
     fn requires_confirmation_before_execution() {
         let dir = tempdir().unwrap();
         fs::write(dir.path().join("source.txt"), "x").unwrap();
@@ -655,10 +743,14 @@ mod tests {
     fn documented_plan_is_parseable() {
         let dir = tempdir().unwrap();
         let path = dir.path().join("shots.json");
+        fs::create_dir_all(dir.path().join("scenes")).unwrap();
+        fs::write(dir.path().join("scenes/opening.blend"), "fixture").unwrap();
         fs::write(&path, starter_manifest()).unwrap();
-        let items = plan(&path, None).unwrap();
+        let items = plan(&path, None, None).unwrap();
         assert_eq!(items[0].name, "sq010-opening");
         assert_eq!(items[0].executable, "blender");
+        assert_eq!(items[0].command[0], "blender");
+        assert_eq!(items[0].argv[0], "blender");
     }
 
     #[test]
