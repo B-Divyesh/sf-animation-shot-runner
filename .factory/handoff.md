@@ -1,33 +1,20 @@
-# Handoff — polish round 1
+# Handoff — adversarial review 2
 
-Shot Runner now has a runnable five-shot local demo, an isolated browser demo route, direct first-screen copy, complete route metadata, a designed 404, and a claim registry with runnable evidence.
+Completed a documentation-only adversarial review of the deployed Shot Runner candidate. Product source was not modified.
 
-Repair commits: `b9679ad9772917acfbc98ca7cd4ec848034d20eb` (main repair) and `8108269` (truthful static 404).
+## Delivered
 
-## Run
+- Added `.factory/review-2.md` with cold 390 px and desktop checks, full landing/README copy audit with word counts, demo/sandbox evidence, claim-by-claim clean-clone results, route/metadata/link checks, history revalidation, and verdict.
+- The verdict is **FAIL**. Blocking findings are the below-fold demo recording/first-screen result and incomplete claims coverage (including unlisted public claims). The report gives concrete fixes.
 
-```sh
-npm ci
-npm test
-npm run build
-npm run test:a11y
-npm run pack:cli
-```
+## Verification performed
 
-Use `cargo run -p animation-shot-runner -- demo` to run the bundled Paper Courier sample. It prints its new temporary output folder. Website demo: `/demo/?demo=1`.
-
-## Evidence
-
-- `npm test`: Rust unit/integration tests, every claim test, static site checks, and PWA offline regression pass.
-- `npm run test:a11y`: 39 axe passes, 0 violations, 0 serious/critical.
-- `npm run build`: release CLI and `dist/site/` build pass; initial JS is 0.88 KB gzip and CSS is 3.67 KB gzip.
-- `npm run pack:cli`: package and package verification pass.
-- Screenshots: `.factory/evidence/home-390.png`, `home-1440.png`, and `demo-390.png`; capture reports no console errors and all tested 390 px routes are 390 px wide.
-- Claim commands are listed in `.factory/claims.json`; `npm run test:claims` runs all of them from clean state.
-- Fresh clone evidence: cloned `b9679ad9772917acfbc98ca7cd4ec848034d20eb` into a new `/tmp/shot-runner-clean-*` directory; `npm ci`, each of the five claim commands, `npm test`, and `npm run build` passed.
-- Live evidence after deployment: `verify-url.sh https://animation-shot-runner.sociobot.in/ .factory/evidence/live-final` passed with no console errors; `TEST_URL=https://animation-shot-runner.sociobot.in/ npm run test:a11y` reports 39 axe passes and 0 violations. `/demo/?demo=1` has title `Demo — Shot Runner`; an unknown URL returns HTTP 404 and title `Page not found — Shot Runner`.
-- A cold 390 px live browser visit to `/?demo=1` redirected to `/demo/?demo=1`, showed the persistent banner, wrote only `demo:animation-shot-runner:opened`, had no console errors, and had no horizontal overflow. Screenshot: `.factory/evidence/live-final/demo-390.png`.
+- Fresh live Chromium contexts at 390 × 844 and 1440 × 900: no console errors, no horizontal overflow, same-origin requests only.
+- Fresh browser demo: redirect, demo banner, separate `demo:` storage, Reset demo, Start for real, and request-log isolation checked.
+- CLI `shot-runner demo` executed from a separate temporary working directory and printed five rendered shots, five cache hits, receipt verification, and an isolated output path.
+- Fresh local clone `/tmp/shot-runner-review-2.WYtvD6`: all five exact commands in `.factory/claims.json` passed; `npm test`, `npm run build`, `npm run test:a11y` (39 passes, 0 violations), and `npm run pack:cli` passed.
+- Live route/header checks confirmed normal routes/assets, sitemap/robots, and a designed HTTP 404.
 
 ## Known gaps
 
-None in the reviewed scope. The factory deployment process still owns production publication and DNS.
+See blocking F-2-1 through F-2-10, plus F-2-11 and F-2-12, in `.factory/review-2.md`. No code changes were made in this review handoff.
