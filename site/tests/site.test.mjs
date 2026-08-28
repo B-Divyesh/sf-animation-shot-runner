@@ -24,6 +24,7 @@ assert.match(worker, /license\|token\|entitlement/i, 'service worker rejects lic
 assert.match(worker, /url\.pathname\.includes\('\/verify'\)/, 'service worker rejects entitlement verification requests');
 assert.match(worker, /shot-runner-v4/, 'service worker cache version advances with its shell');
 const staticPolicy = JSON.parse(readFileSync(new URL('../public/staticwebapp.config.json', import.meta.url), 'utf8'));
+assert.equal(staticPolicy.navigationFallback, undefined, 'static routes must not hide unknown URLs behind the landing page');
 const headers = staticPolicy.globalHeaders;
 assert.match(headers['Content-Security-Policy'], /default-src 'self'/, 'deployment needs a self-only CSP baseline');
 assert.match(headers['Content-Security-Policy'], /connect-src 'self';/, 'CSP allows only same-origin connections');
