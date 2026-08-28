@@ -4,6 +4,10 @@
   Cache-Control: public, max-age=31536000, immutable
 /shot-proof-768-97c150b8.webp
   Cache-Control: public, max-age=31536000, immutable
+/shot-runner-social-1200x630.webp
+  Cache-Control: public, max-age=31536000, immutable
+/apple-touch-icon.png
+  Cache-Control: public, max-age=31536000, immutable
 /fonts/instrument-serif-5eb09b5a.woff2
   Cache-Control: public, max-age=31536000, immutable
 /fonts/ibm-plex-mono-08949f72.woff2

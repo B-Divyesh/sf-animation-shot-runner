@@ -1,10 +1,14 @@
-const CACHE = 'shot-runner-v3';
+const CACHE = 'shot-runner-v4';
 const SHELL = [
   '/',
   '/index.html',
+  '/demo/',
   '/privacy/',
   '/terms/',
+  '/404.html',
   '/favicon.svg',
+  '/apple-touch-icon.png',
+  '/shot-runner-social-1200x630.webp',
   '/shot-proof-e5786fb0.webp',
   '/shot-proof-768-97c150b8.webp',
   '/fonts/instrument-serif-5eb09b5a.woff2',
@@ -24,7 +28,7 @@ function isCacheableStaticRequest(request) {
   // endpoint changes: only public, same-origin documentation assets may enter
   // Cache Storage.
   if (url.origin !== self.location.origin || isSensitiveUrl(url)) return false;
-  if (request.mode === 'navigate') return !url.search && SHELL_PATHS.has(url.pathname);
+  if (request.mode === 'navigate') return SHELL_PATHS.has(url.pathname);
   return !url.search && (
     SHELL_PATHS.has(url.pathname)
     || url.pathname.startsWith('/assets/')
@@ -43,12 +47,16 @@ self.addEventListener('activate', event => event.waitUntil(
 
 self.addEventListener('fetch', event => {
   if (!isCacheableStaticRequest(event.request)) return;
-  event.respondWith(caches.match(event.request).then(cached => {
+  const url = new URL(event.request.url);
+  const cacheRequest = event.request.mode === 'navigate'
+    ? new Request(`${url.origin}${url.pathname}`)
+    : event.request;
+  event.respondWith(caches.match(cacheRequest).then(cached => {
     if (cached) return cached;
     return fetch(event.request).then(response => {
       if (!response.ok || response.type !== 'basic') return response;
       const copy = response.clone();
-      event.waitUntil(caches.open(CACHE).then(cache => cache.put(event.request, copy)));
+      event.waitUntil(caches.open(CACHE).then(cache => cache.put(cacheRequest, copy)));
       return response;
     });
   }));

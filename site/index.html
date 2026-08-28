@@ -4,95 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f1eee5">
-  <meta name="description" content="Run named animation shots locally, cache frames, and preserve verifiable preview receipts from one safe CLI.">
-  <title>Shot Runner — repeatable animation preview renders</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/fonts/instrument-serif-5eb09b5a.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/ibm-plex-mono-08949f72.woff2" as="font" type="font/woff2" crossorigin>
+  <meta name="description" content="Render named animation previews locally from one command, with contact sheets and JSON receipts.">
+  <meta property="og:type" content="website"><meta property="og:title" content="Shot Runner — local animation previews"><meta property="og:description" content="Render named animation previews locally from one command."><meta property="og:image" content="https://animation-shot-runner.sociobot.in/shot-runner-social-1200x630.webp"><meta property="og:url" content="https://animation-shot-runner.sociobot.in/">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Shot Runner — local animation previews"><meta name="twitter:description" content="Render named animation previews locally from one command."><meta name="twitter:image" content="https://animation-shot-runner.sociobot.in/shot-runner-social-1200x630.webp">
+  <title>Shot Runner — local animation previews</title><link rel="canonical" href="https://animation-shot-runner.sociobot.in/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fonts/instrument-serif-5eb09b5a.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/ibm-plex-mono-08949f72.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/shot-proof-768-97c150b8.webp" imagesrcset="/shot-proof-768-97c150b8.webp 768w, /shot-proof-e5786fb0.webp 1536w" imagesizes="(max-width: 800px) calc(100vw - 32px), min(calc(100vw - 48px), 1320px)" as="image" type="image/webp" fetchpriority="high">
   <script type="module" src="/src/main.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header class="site-head wrap">
-    <a class="wordmark" href="/" aria-label="SR / 01 — Shot Runner home">SR / 01</a>
-    <nav aria-label="Primary navigation">
-      <a href="#workflow">Workflow</a><a href="#demo">Try manifest</a><a href="#license">License</a><a href="https://github.com/B-Divyesh/sf-animation-shot-runner">Source</a>
-    </nav>
-  </header>
+  <header class="site-head wrap"><a class="wordmark" href="/" aria-label="Shot Runner home">SR / 01</a><nav aria-label="Primary navigation"><a href="/demo/?demo=1">Demo</a><a href="#how-it-works">How it works</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></header>
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
-      <div class="edition" aria-hidden="true"><span>LOCAL PIPELINE EDITION</span><span>VOL. 01 — 2026</span></div>
-      <h1 id="hero-title">Every shot.<br><em>One receipt.</em></h1>
-      <div class="hero-grid">
-        <p class="standfirst">Run five—or fifty—named previews without reopening a browser. Shot Runner turns local renderer commands into cached frames, contact sheets, and provenance you can inspect.</p>
-        <div class="hero-actions">
-          <div class="command" aria-label="Install command"><code>cargo install animation-shot-runner</code><button class="copy" data-copy="cargo install animation-shot-runner" aria-label="Copy install command">Copy</button></div>
-          <a class="text-link" href="#quickstart">Read the 3-minute setup <span aria-hidden="true">↓</span></a>
-        </div>
-      </div>
-      <figure class="proof">
-        <img src="/shot-proof-e5786fb0.webp" srcset="/shot-proof-768-97c150b8.webp 768w, /shot-proof-e5786fb0.webp 1536w" sizes="(max-width: 800px) calc(100vw - 32px), min(calc(100vw - 48px), 1320px)" width="1536" height="1024" alt="Five-frame monochrome animation proof of a geometric courier crossing a paper stage" fetchpriority="high">
-        <figcaption><span>PROOF 0007 / COURIER CROSSING</span><span>24 FPS · sRGB · SHA-256 LOCKED</span></figcaption>
-      </figure>
+      <div class="edition" aria-hidden="true"><span>LOCAL PREVIEW RUNNER</span><span>VOL. 01 — 2026</span></div>
+      <h1 id="hero-title">Render named animation<br><em>previews from one command.</em></h1>
+      <div class="hero-grid"><p class="standfirst">For small animation teams and technical artists who need repeatable local preview renders.</p><div class="hero-actions"><a class="button primary" href="/demo/?demo=1">Try it with sample data</a><p class="action-note">Opens the five-shot demo. It never touches your project.</p><div class="command" aria-label="Install command"><code>cargo install animation-shot-runner</code><button class="copy" data-copy="cargo install animation-shot-runner" aria-label="Copy install command">Copy command</button></div></div></div>
+      <ul class="plain-facts"><li>Runs on local files</li><li>No account is needed</li><li>MIT-licensed CLI</li></ul>
+      <figure class="proof"><img src="/shot-proof-e5786fb0.webp" srcset="/shot-proof-768-97c150b8.webp 768w, /shot-proof-e5786fb0.webp 1536w" sizes="(max-width: 800px) calc(100vw - 32px), min(calc(100vw - 48px), 1320px)" width="1536" height="1024" alt="Five-frame proof of a geometric courier moving across a paper stage" fetchpriority="high"><figcaption><span>FIVE SAMPLE SHOTS / PAPER COURIER</span><span>24 FPS · sRGB · LOCAL RECEIPTS</span></figcaption></figure>
     </section>
-
-    <section class="ticker" aria-label="Product capabilities"><div>ALLOWLISTED COMMANDS <i>◆</i> CONTENT CACHE <i>◆</i> CONTACT SHEETS <i>◆</i> JSON RECEIPTS <i>◆</i> ZERO UPLOADS</div></section>
-
-    <section id="workflow" class="section wrap">
-      <p class="kicker">THE RUN ORDER / 01—03</p>
-      <h2>A tiny layer between “ready” and “review it.”</h2>
-      <ol class="steps">
-        <li><span>01</span><h3>Name the shots</h3><p>Keep renderer commands, source paths, FPS, and colorspace together in one reviewable JSON manifest.</p></li>
-        <li><span>02</span><h3>Approve the tools</h3><p><code>plan</code> is inert. <code>run</code> requires both an exact executable allowlist and <code>--yes</code>.</p></li>
-        <li><span>03</span><h3>Pass the proof</h3><p>Share a contact sheet and receipt. Re-run unchanged sources from the content cache; verify every output hash.</p></li>
-      </ol>
-    </section>
-
-    <section id="demo" class="demo section">
-      <div class="wrap demo-head"><div><p class="kicker">MANIFEST DESK / LOCAL PREVIEW</p><h2>Proof your run before it runs.</h2></div><p>This browser demo parses only what you type. Nothing is sent or executed.</p></div>
-      <div class="wrap desk">
-        <div class="editor-pane">
-          <label for="manifest">shots.json</label>
-          <textarea id="manifest" spellcheck="false" rows="22" aria-describedby="manifest-help"></textarea>
-          <p id="manifest-help">JSON manifest · local to this tab</p>
-          <button id="plan" class="button" type="button">Validate plan</button>
-        </div>
-        <section class="plan-pane" aria-labelledby="plan-title">
-          <div class="plan-title"><h3 id="plan-title">Run plan</h3><span id="plan-status" class="status">EMPTY</span></div>
-          <div id="plan-output" class="empty" aria-live="polite"><strong>No proof yet.</strong><p>Validate the manifest to see which commands would be allowed. The demo never executes them.</p></div>
-        </section>
-      </div>
-    </section>
-
-    <section id="quickstart" class="section wrap quickstart">
-      <div><p class="kicker">FIRST RUN / THREE COMMANDS</p><h2>No daemon. No account. No render farm.</h2><p>Install your renderer separately and observe its license. Shot Runner itself does not require ffmpeg unless your chosen command does.</p></div>
-      <pre aria-label="Shot Runner setup commands"><code><b>$</b> shot-runner init shots.json
+    <section id="how-it-works" class="section wrap"><p class="kicker">HOW IT WORKS</p><h2>Make preview renders you can repeat.</h2><ol class="steps"><li><span>01</span><h3>List your shots</h3><p>Put shot names, source paths, frame rate, colour space, and command parts in one JSON file.</p></li><li><span>02</span><h3>Review the command</h3><p><code>plan</code> shows the exact command. Nothing runs until you approve the program name and add <code>--yes</code>.</p></li><li><span>03</span><h3>Use the outputs</h3><p>Each shot gets frames, a contact sheet, and a JSON receipt. Repeating unchanged work reuses local cached frames.</p></li></ol></section>
+    <section class="demo-callout section"><div class="wrap"><p class="kicker">BUNDLED FIVE-SHOT SAMPLE</p><h2>Run the sample in a temporary folder.</h2><p class="callout-copy">The demo uses its own bundled scene notes. It writes five previews, contact sheets, and receipts, then repeats the run to show the cache.</p><a class="button primary" href="/demo/?demo=1">Open the sample demo</a></div></section>
+<section id="install" class="section wrap quickstart"><div><p class="kicker">INSTALL THE CLI</p><h2>Start with your own shot file.</h2><p>Install your renderer separately. Shot Runner does not include Blender, ffmpeg, or other renderers.</p></div><pre tabindex="0" aria-label="Shot Runner setup commands"><code><b>$</b> cargo install --path crates/shot-runner
+<b>$</b> shot-runner demo
+<b>$</b> shot-runner init shots.json
 <b>$</b> shot-runner plan shots.json
-<b>$</b> shot-runner run shots.json \
-    --allow-command blender --yes
-
-DONE  paper-courier — 5 rendered
-receipts ready in previews/</code></pre>
-    </section>
-
-    <section id="license" class="license section wrap">
-      <div class="price-block"><p class="kicker">PRODUCER TOOLKIT / OPTIONAL</p><h2>$39 <small>once</small></h2><p>The CLI stays complete and MIT licensed. The toolkit unlocks production manifest recipes, handoff checklists, and team receipt conventions on this page—plus future toolkit updates.</p></div>
-      <div class="license-panel">
-        <div id="license-locked">
-          <h3>Keep the runner. Add the field guide.</h3>
-          <ul><li>Blender, Motion Canvas, and ffmpeg recipes</li><li>Studio-ready naming and review checklists</li><li>One purchase; no render-minute billing</li></ul>
-          <a class="button" href="https://api.sociobot.in/api/v1/products/animation-shot-runner/checkout">Buy Producer Toolkit</a>
-          <button class="restore-toggle secondary" type="button" aria-expanded="false" aria-controls="restore-form">Have a license? Restore it</button>
-          <form id="restore-form" hidden><label for="license-token">License token</label><input id="license-token" name="license" autocomplete="off" required><button class="button" type="submit">Verify license</button></form>
-        </div>
-        <div id="license-unlocked" hidden><p class="status success">LICENSE ACTIVE</p><h3>Your production desk is unlocked.</h3><p>Toolkit recipe downloads will appear here as they ship. Your permanent core CLI access is unchanged.</p><button id="forget-license" class="secondary" type="button">Remove license from this browser</button></div>
-        <p id="license-message" class="notice" aria-live="polite"></p>
-        <p class="fine">Sociobot / Dodo is merchant of record. Refunds are handled there and revoke the license. <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></p>
-      </div>
-    </section>
+<b>$</b> shot-runner run shots.json --allow-command blender --yes</code></pre></section>
+    <section class="section wrap privacy-note"><p class="kicker">PRIVACY</p><h2>Keep media on your computer.</h2><p>Shot Runner runs local commands and writes local outputs. Read the <a href="/privacy/">privacy policy</a> for the documentation site.</p></section>
   </main>
-  <footer><div class="wrap footer-grid"><p>SHOT RUNNER<br><span>Local previews with a paper trail.</span></p><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-animation-shot-runner">MIT source</a></nav><p class="folio">NO CLOUD MEDIA / NO TELEMETRY<br>© 2026 PARAM FACTORY</p></div></footer>
-  <div id="network" class="network" role="status" hidden>You’re offline. The docs still work; license verification will retry when you reconnect.</div>
+  <footer><div class="wrap footer-grid"><p>SHOT RUNNER<br><span>Local animation previews with receipts.</span></p><nav aria-label="Footer"><a href="/demo/?demo=1">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav><p class="folio">BUILT BY PARAM FACTORY<br>BUILD 2026.08.28</p></div></footer>
+  <div id="network" class="network" role="status" hidden>You are offline. Opened pages may still be available from this device.</div>
 </body>
 </html>

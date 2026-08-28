@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "project": "paper-courier",
+  "output": "previews",
+  "shots": [
+    {"name":"sq010-arrival","source":"sources/arrival.scene","fps":24,"colorspace":"sRGB","command":["shot-runner-demo-renderer","{source}","{frames}/frame-0001.png"]},
+    {"name":"sq020-door","source":"sources/door.scene","fps":24,"colorspace":"sRGB","command":["shot-runner-demo-renderer","{source}","{frames}/frame-0001.png"]},
+    {"name":"sq030-crossing","source":"sources/crossing.scene","fps":24,"colorspace":"sRGB","command":["shot-runner-demo-renderer","{source}","{frames}/frame-0001.png"]},
+    {"name":"sq040-turn","source":"sources/turn.scene","fps":24,"colorspace":"sRGB","command":["shot-runner-demo-renderer","{source}","{frames}/frame-0001.png"]},
+    {"name":"sq050-exit","source":"sources/exit.scene","fps":24,"colorspace":"sRGB","command":["shot-runner-demo-renderer","{source}","{frames}/frame-0001.png"]}
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  {"id":"demo-five-shot","claim":"The bundled demo renders five named sample shots in a new temporary folder.","where":"Demo page, README","test":"npm run test:claims -- --grep @claim:demo-five-shot","sandbox":"fresh CLI process; bundled Paper Courier sample"},
+  {"id":"demo-cache-and-receipt","claim":"The bundled demo reuses cached sample frames and its receipt detects a changed frame.","where":"Demo page, README","test":"npm run test:claims -- --grep @claim:demo-cache-and-receipt","sandbox":"fresh CLI process; bundled Paper Courier sample"},
+  {"id":"review-before-run","claim":"Shot Runner requires approval before it runs a manifest command.","where":"Home page, README","test":"npm run test:claims -- --grep @claim:review-before-run","sandbox":"temporary manifest; no renderer execution"},
+  {"id":"local-files-and-license","claim":"Shot Runner writes local outputs and is MIT-licensed.","where":"Home page, Privacy, README","test":"npm run test:claims -- --grep @claim:local-files-and-license","sandbox":"repository source and distributed LICENSE"},
+  {"id":"isolated-browser-demo","claim":"The sample page does not ask for an account, uses separate demo browser storage, and makes only same-origin documentation requests.","where":"Home, Demo page, Privacy","test":"npm run test:claims -- --grep @claim:isolated-browser-demo","sandbox":"fresh browser context; /?demo=1 redirect"}
+]

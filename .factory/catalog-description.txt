@@ -1,0 +1,1 @@
+Render named animation previews locally from one command.
