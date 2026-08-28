@@ -2,7 +2,7 @@
 
 Shot Runner now has a runnable five-shot local demo, an isolated browser demo route, direct first-screen copy, complete route metadata, a designed 404, and a claim registry with runnable evidence.
 
-Repair commit: `b9679ad9772917acfbc98ca7cd4ec848034d20eb`.
+Repair commits: `b9679ad9772917acfbc98ca7cd4ec848034d20eb` (main repair) and `8108269` (truthful static 404).
 
 ## Run
 
@@ -25,6 +25,7 @@ Use `cargo run -p animation-shot-runner -- demo` to run the bundled Paper Courie
 - Screenshots: `.factory/evidence/home-390.png`, `home-1440.png`, and `demo-390.png`; capture reports no console errors and all tested 390 px routes are 390 px wide.
 - Claim commands are listed in `.factory/claims.json`; `npm run test:claims` runs all of them from clean state.
 - Fresh clone evidence: cloned `b9679ad9772917acfbc98ca7cd4ec848034d20eb` into a new `/tmp/shot-runner-clean-*` directory; `npm ci`, each of the five claim commands, `npm test`, and `npm run build` passed.
+- Live evidence after deployment: `verify-url.sh https://animation-shot-runner.sociobot.in/ .factory/evidence/live-final` passed with no console errors; `TEST_URL=https://animation-shot-runner.sociobot.in/ npm run test:a11y` reports 39 axe passes and 0 violations. `/demo/?demo=1` has title `Demo — Shot Runner`; an unknown URL returns HTTP 404 and title `Page not found — Shot Runner`.
 
 ## Known gaps
 

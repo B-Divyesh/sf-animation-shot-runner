@@ -2,6 +2,8 @@
 
 Reviewed source: `.factory/review-1.md` and all earlier review, verification, and handoff records present in the repository.
 
+Live re-check after deployment: `https://animation-shot-runner.sociobot.in/` returned the repaired title, one h1, main landmark, no console errors, and zero missing alt/button labels (`.factory/evidence/live-final/verify.json`). `/?demo=1` served the repaired landing shell and redirected in-browser to `/demo/?demo=1`; `/demo/?demo=1` served **Demo — Shot Runner**; `/missing-review-probe` returned HTTP 404 with **Page not found — Shot Runner**. These live checks apply to each web finding below.
+
 | Finding | Change made | Evidence |
 | --- | --- | --- |
 | F-1-1 | Rewrote the first screen around the actual job, intended users, and a visible sample action. | `site/tests/capture.mjs`; `.factory/evidence/home-390.png` |
