@@ -26,6 +26,7 @@ Use `cargo run -p animation-shot-runner -- demo` to run the bundled Paper Courie
 - Claim commands are listed in `.factory/claims.json`; `npm run test:claims` runs all of them from clean state.
 - Fresh clone evidence: cloned `b9679ad9772917acfbc98ca7cd4ec848034d20eb` into a new `/tmp/shot-runner-clean-*` directory; `npm ci`, each of the five claim commands, `npm test`, and `npm run build` passed.
 - Live evidence after deployment: `verify-url.sh https://animation-shot-runner.sociobot.in/ .factory/evidence/live-final` passed with no console errors; `TEST_URL=https://animation-shot-runner.sociobot.in/ npm run test:a11y` reports 39 axe passes and 0 violations. `/demo/?demo=1` has title `Demo — Shot Runner`; an unknown URL returns HTTP 404 and title `Page not found — Shot Runner`.
+- A cold 390 px live browser visit to `/?demo=1` redirected to `/demo/?demo=1`, showed the persistent banner, wrote only `demo:animation-shot-runner:opened`, had no console errors, and had no horizontal overflow. Screenshot: `.factory/evidence/live-final/demo-390.png`.
 
 ## Known gaps
 
