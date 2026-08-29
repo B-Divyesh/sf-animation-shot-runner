@@ -28,8 +28,9 @@ function cargo(testName) {
 }
 
 async function withPreview(port, test) {
-  const origin = `http://127.0.0.1:${port}`;
-  const vite = spawn(process.execPath, [resolve('node_modules/vite/bin/vite.js'), 'preview', '--config', 'site/vite.config.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {stdio: 'pipe'});
+  const externalOrigin = process.env.TEST_ORIGIN?.replace(/\/$/, '');
+  const origin = externalOrigin || `http://127.0.0.1:${port}`;
+  const vite = externalOrigin ? null : spawn(process.execPath, [resolve('node_modules/vite/bin/vite.js'), 'preview', '--config', 'site/vite.config.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {stdio: 'pipe'});
   let browser;
   try {
     let ready = false;
@@ -42,8 +43,8 @@ async function withPreview(port, test) {
     await test({browser, origin});
   } finally {
     await browser?.close();
-    vite.kill('SIGTERM');
-    await once(vite, 'exit').catch(() => {});
+    vite?.kill('SIGTERM');
+    if (vite) await once(vite, 'exit').catch(() => {});
   }
 }
 
