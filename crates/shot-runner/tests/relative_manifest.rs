@@ -206,10 +206,30 @@ fn documented_relative_paths_cache_and_exit_codes_hold() {
         .save(project.join("fixture.png")).expect("fixture");
     fs::write(project.join("shots.json"), r#"{"version":1,"project":"relative","output":"previews","shots":[{"name":"sq010","source":"source.txt","fps":24,"colorspace":"sRGB","command":["cp","fixture.png","{frames}/frame-0001.png"]}]}"#).expect("manifest");
     let binary = env!("CARGO_BIN_EXE_shot-runner");
+    let plan = Command::new(binary).current_dir(dir.path()).args(["--json", "plan", "project/shots.json", "--cache-dir", "shared-cache"]).output().expect("cache-dir plan");
+    assert_eq!(plan.status.code(), Some(0));
+    let planned: Value = serde_json::from_slice(&plan.stdout).expect("planned JSON");
+    let cache_root = dir.path().join("shared-cache");
+    assert!(planned[0]["cache_directory"].as_str().is_some_and(|path| path.starts_with(cache_root.to_string_lossy().as_ref())));
     let success = Command::new(binary).current_dir(dir.path()).args(["run", "project/shots.json", "--cache-dir", "shared-cache", "--allow-command", "cp", "--yes"]).output().expect("success run");
     assert_eq!(success.status.code(), Some(0));
     assert!(project.join("previews/sq010/receipt.json").is_file());
     let missing = Command::new(binary).current_dir(dir.path()).args(["plan", "missing.json"]).output().expect("bad manifest"); assert_eq!(missing.status.code(), Some(2));
     let unapproved = Command::new(binary).current_dir(dir.path()).args(["run", "project/shots.json"]).output().expect("unapproved"); assert_eq!(unapproved.status.code(), Some(3));
     let failing = Command::new(binary).current_dir(dir.path()).args(["run", "project/shots.json", "--shot", "sq010", "--allow-command", "false", "--yes"]).output().expect("wrong allowed"); assert_eq!(failing.status.code(), Some(3));
+}
+
+#[test]
+fn native_contact_sheet_runs_without_ffmpeg_on_path() {
+    let dir = tempdir().expect("temporary native-image project");
+    fs::write(dir.path().join("source.txt"), "source-v1").expect("source");
+    DynamicImage::ImageRgba8(ImageBuffer::from_pixel(80, 45, Rgba([20, 30, 40, 255])))
+        .save(dir.path().join("fixture.png")).expect("fixture");
+    fs::write(dir.path().join("shots.json"), r#"{"version":1,"project":"native","output":"previews","shots":[{"name":"sq010","source":"source.txt","fps":24,"colorspace":"sRGB","command":["/bin/cp","fixture.png","{frames}/frame-0001.png"]}]}"#).expect("manifest");
+    let result = Command::new(env!("CARGO_BIN_EXE_shot-runner"))
+        .current_dir(dir.path()).env_clear().env("PATH", "")
+        .args(["run", "shots.json", "--allow-command", "/bin/cp", "--yes"])
+        .output().expect("native run without PATH");
+    assert_eq!(result.status.code(), Some(0), "stderr: {}", String::from_utf8_lossy(&result.stderr));
+    assert!(dir.path().join("previews/sq010/contact-sheet.png").is_file());
 }

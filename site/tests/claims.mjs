@@ -51,7 +51,7 @@ if (selected('@claim:mit-license')) {
   assert.match(license, /Permission is hereby granted, free of charge/, 'the distributed license must contain the MIT grant');
 }
 if (selected('@claim:renderer-dependencies')) {
-  cargo('runs_caches_and_verifies_a_real_preview');
+  cargo('native_contact_sheet_runs_without_ffmpeg_on_path');
   const packed = spawnSync('cargo', ['package', '--manifest-path', 'crates/shot-runner/Cargo.toml', '--allow-dirty', '--list'], {encoding: 'utf8'});
   assert.equal(packed.status, 0, packed.stderr);
   assert.doesNotMatch(packed.stdout, /(^|\/)ffmpeg(\.|$)|(^|\/)blender(\.|$)/im, 'the crate ships no renderer binary');
