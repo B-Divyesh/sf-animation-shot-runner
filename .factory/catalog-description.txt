@@ -1,1 +1,1 @@
-Run repeatable animation previews for named shots from one local command.
+Render named animation previews from one local command.

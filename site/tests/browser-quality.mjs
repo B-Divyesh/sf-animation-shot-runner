@@ -98,6 +98,27 @@ try {
     }
     await context.close();
   }
+
+  const historyContext = await browser.newContext({viewport: {width: 390, height: 844}, reducedMotion: 'reduce'});
+  const historyPage = await historyContext.newPage();
+  historyPage.setDefaultTimeout(5000);
+  await historyPage.goto(`${origin}/`, {waitUntil: 'networkidle'});
+  await historyPage.evaluate(() => window.scrollTo({top: 1200, behavior: 'instant'}));
+  await historyPage.waitForFunction(() => Math.round(window.scrollY) === 1200);
+  const demoLink = historyPage.locator('header a[href="/demo/?demo=1"]');
+  await demoLink.evaluate(element => element.focus({preventScroll: true}));
+  await demoLink.evaluate(element => element.click());
+  await historyPage.waitForURL(`${origin}/demo/?demo=1`);
+  await historyPage.waitForFunction(() => document.activeElement === document.querySelector('h1'));
+  await historyPage.waitForFunction(() => /See five sample\s*previews run/.test(document.querySelector('[data-route-announcement]')?.textContent || ''));
+  assert.match(await historyPage.locator('[data-route-announcement]').textContent(), /See five sample\s*previews run/, 'Demo navigation announces its new heading');
+  await historyPage.goBack({waitUntil: 'networkidle'});
+  await historyPage.waitForFunction(() => Math.round(window.scrollY) === 1200);
+  assert.equal(await demoLink.evaluate(element => document.activeElement === element), true, 'Back restores focus to the originating control');
+  await historyPage.goForward({waitUntil: 'networkidle'});
+  await historyPage.waitForFunction(() => document.activeElement === document.querySelector('h1'));
+  assert.match(await historyPage.locator('[data-route-announcement]').textContent(), /See five sample\s*previews run/, 'Forward restores the demo heading focus');
+  await historyContext.close();
   console.log('browser quality checks passed at 390 by 844');
 } finally {
   await browser?.close();

@@ -15,8 +15,7 @@ Counts treat hyphenated terms, file names, and command tokens as one word. Contr
 | 16 | Put shot names, source paths, frame rate, colour space, and command parts in one JSON file. |
 | 5 | `plan` shows the exact command. |
 | 11 | Nothing runs until you approve the executable name and add `--yes`. |
-| 11 | Each shot gets frames, a contact sheet, and a JSON receipt. |
-| 10 | The receipt records output hashes, frame rate, and colour space. |
+| 20 | Each shot gets frames, a contact sheet, and a JSON receipt that records output hashes, frame rate, and colour space. |
 | 7 | Repeating unchanged work reuses local cached frames. |
 | 7 | Run the sample in a temporary folder. |
 | 8 | The demo uses its own bundled scene notes. |
@@ -31,7 +30,7 @@ Counts treat hyphenated terms, file names, and command tokens as one word. Contr
 | 3 | You are offline. |
 | 9 | Opened pages may still be available from this device. |
 
-Fragments and controls checked: **Runs on local files**, **MIT-licensed CLI**, **Try it with sample data**, **Copy command**, **Open source and install on GitHub**, **Open the sample demo**, navigation labels, proof captions, and the pinned install command. Each names a fact, destination, or result. The first screen states the job, audience, sample action, result, and three facts without slogans.
+Fragments and controls checked: **Shot Runner**, **LOCAL CLI · MIT LICENSED**, **Runs on local files**, **MIT-licensed CLI**, **Try it with sample data**, **Copy command**, **Open source and install on GitHub**, **Open the sample demo**, **24 FPS · sRGB · JSON OUTPUT HASHES**, navigation labels, proof captions, and the pinned install command. Each names a fact, destination, or result. The first screen states the job, audience, sample action, result, and three facts without slogans. The old **SR / 01** and **VOL. 01 — 2026** labels are absent.
 
 ## README sentences
 
@@ -94,4 +93,16 @@ Fragments and controls checked: **Runs on local files**, **MIT-licensed CLI**, *
 | Hash record | receipt |
 | Bundled try-out | sample demo |
 
-The legal, demo, and 404 routes were also scanned. Their sentences stay within 22 words and contain no banned marketing language.
+## Demo, legal, and 404 copy
+
+| Words | Copy |
+| ---: | --- |
+| 22 | The real CLI creates a temporary Paper Courier folder and verifies a JSON receipt with output hashes, frame rate, and colour space. |
+| 16 | The bundled safe renderer writes one PNG preview, a contact sheet, and a receipt per shot. |
+| 10 | Inspect the generated frames, contact sheets, cache entries, and receipts in the printed folder. |
+| 12 | It writes frames, contact sheets, caches, and JSON output records on your computer. |
+| 11 | The site keeps a short-lived navigation marker in this browser tab. |
+| 12 | It restores scroll position and focus when you use Back or Forward. |
+| 12 | Return to the Shot Runner home page to run the sample or read the CLI instructions. |
+
+The Demo sentence defines **receipt** before its terminal transcript, steps, and captions use the term. The legal and 404 routes use **JSON output records** rather than an undefined receipt. All scanned route sentences stay within 22 words and contain no banned marketing language.

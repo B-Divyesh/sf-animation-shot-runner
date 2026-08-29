@@ -90,6 +90,28 @@ async function offlineOpenedPages() {
   });
 }
 
+async function routeHistory() {
+  await withPreview(4179, async ({browser, origin}) => {
+    const context = await browser.newContext({viewport: {width: 390, height: 844}, reducedMotion: 'reduce'});
+    const page = await context.newPage();
+    await page.goto(origin, {waitUntil: 'networkidle'});
+    await page.evaluate(() => window.scrollTo({top: 1200, behavior: 'instant'}));
+    await page.waitForFunction(() => Math.round(window.scrollY) === 1200);
+    const demoLink = page.locator('header a[href="/demo/?demo=1"]');
+    await demoLink.evaluate(element => element.focus({preventScroll: true}));
+    await demoLink.evaluate(element => element.click());
+    await page.waitForURL(`${origin}/demo/?demo=1`);
+    await page.waitForFunction(() => document.activeElement === document.querySelector('h1'));
+    assert.match(await page.locator('[data-route-announcement]').textContent(), /See five sample\s*previews run/, 'Demo navigation announces the new heading');
+    await page.goBack({waitUntil: 'networkidle'});
+    await page.waitForFunction(() => Math.round(window.scrollY) === 1200);
+    assert.equal(await demoLink.evaluate(element => document.activeElement === element), true, 'Back restores the originating focus target');
+    await page.goForward({waitUntil: 'networkidle'});
+    await page.waitForFunction(() => document.activeElement === document.querySelector('h1'));
+    await context.close();
+  });
+}
+
 function installFromCleanMachine() {
   const html = readFileSync('site/index.html', 'utf8');
   const displayed = html.match(/<div class="command"[^>]*><code>(cargo install[^<]+)<\/code>/)?.[1];
@@ -143,6 +165,7 @@ await claim('@claim:receipt-metadata', () => cargo('receipt_records_verified_has
 await claim('@claim:direct-command-expansion', () => cargo('direct_command_expands_every_placeholder_without_shell_interpretation'));
 await claim('@claim:relative-paths-and-exit-codes', () => cargo('documented_relative_paths_cache_and_exit_codes_hold'));
 await claim('@claim:isolated-browser-demo', browserDemo);
+await claim('@claim:route-history', routeHistory);
 await claim('@claim:offline-opened-pages', offlineOpenedPages);
 await claim('@claim:install-from-clean-machine', installFromCleanMachine);
 await claim('@claim:build-output', buildOutput);

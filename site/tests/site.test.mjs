@@ -21,10 +21,23 @@ assert.equal((home.match(/<img /g) || []).length, (home.match(/<img [^>]*alt=/g)
 assert.match(home, /cargo install --git https:\/\/github\.com\/B-Divyesh\/sf-animation-shot-runner\.git --rev [a-f0-9]{40} --locked animation-shot-runner/, 'home needs a pinned Git install command');
 assert.match(home, /Open source and install on GitHub/, 'home needs a visible source and install link');
 assert.doesNotMatch(home, /approve the program name/, 'approval terminology stays consistent');
+assert.match(home, />Shot Runner<\/a>/, 'the visible wordmark names the product');
+assert.doesNotMatch(home, /SR \/ 01|VOL\. 01/, 'the home removes decorative issue labels');
+assert.match(home, /JSON receipt that records output hashes, frame rate, and colour space/, 'the first home receipt explains what it records');
+const demo = readFileSync(new URL('../demo/index.html', import.meta.url), 'utf8');
+assert.match(demo, /JSON receipt with output hashes, frame rate, and colour space/, 'the first demo receipt explains what it records');
+for (const page of pages) {
+  const html = readFileSync(new URL(`../${page}`, import.meta.url), 'utf8');
+  assert.match(html, />Shot Runner<\/a>/, `${page} has a visible product wordmark`);
+  assert.doesNotMatch(html, /SR \/ 01|VOL\. 01/, `${page} has no decorative issue labels`);
+}
 const script = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 assert.match(script, /demo:animation-shot-runner:opened/, 'demo storage must have its own namespace');
 assert.match(script, /location\.replace\('\/demo\/\?demo=1'\)/, 'root demo query opens the real demo route');
 assert.match(script, /startsWith\(DEMO_PREFIX\)/, 'leaving the demo removes its full namespace');
+assert.match(script, /history\.scrollRestoration = 'manual'/, 'document routes own scroll restoration');
+assert.match(script, /ROUTE_TRANSITION_KEY/, 'document routes track new-route heading focus');
+assert.match(script, /dataset\.routeAnnouncement/, 'document routes announce their new heading');
 const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 assert.match(worker, /url\.origin !== self\.location\.origin/, 'service worker caches same-origin assets only');
 assert.match(worker, /license\|token\|entitlement/i, 'service worker rejects license-bearing URLs');
