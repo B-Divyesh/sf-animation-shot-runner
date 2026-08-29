@@ -1,31 +1,21 @@
-# Handoff — polish round 2
+# Handoff — adversarial review 3
 
-Repaired the review-2 release candidate. The distinct warm-newsprint broadsheet identity remains intact.
+Completed a read-only product review against commit `224935b96570655b27fbf4e26d39dedaaad87cc8` and the live site. Product code was not changed. The full result is in `.factory/review-3.md`.
 
-## Delivered
+## Verdict
 
-- The one-click `/demo/?demo=1` path now shows the real `shot-runner demo` transcript and a real generated contact sheet in its first mobile viewport. It retains the isolated banner, Reset demo, and Start for real controls.
-- Added 12 behavior-level claims in `.factory/claims.json`, including cache/tamper, caller-folder isolation, exact planned argv, ordinary-run outputs/cache, renderer dependency boundaries, direct argv expansion, documented relative paths/exits, browser isolation, and MIT license coverage.
-- Added complete Twitter metadata to Demo, Privacy, Terms, and 404; tightened receipt and exit-code wording; refreshed screenshot evidence and copy audit.
+**FAIL.** Six findings remain: a blocking unusable registry install command, a blocking incomplete claims inventory, first-demo text at 1.10:1 contrast, phone targets below 44 × 44 px, retained demo state after **Start for real**, and inconsistent approval terminology.
 
-## Verification
+## Verification performed
 
-- `npm ci`
-- Every exact command in `.factory/claims.json` from the repaired clean tree.
-- `npm test` — Rust unit/integration, site contract, all claims, and PWA offline regression passed.
-- `npm run build` — `dist/site/` produced; initial JS 0.88 kB gzip and CSS 3.84 kB gzip.
-- `npm run test:a11y` — 39 axe passes, 0 violations, 0 serious/critical.
-- `npm run pack:cli` — publishable crate package passed.
-- `node site/tests/capture.mjs` — fresh 390 px demo/home and 1440 px home screenshots with no console errors.
+- Fresh Chromium contexts at 390 × 844 and 1440 × 900 for cold home and demo reads.
+- Live request/storage logging, Reset demo, Start for real, deep links, browser Back, 404, metadata, header/footer, and link crawl.
+- Every command in `.factory/claims.json`, independently, after `npm ci` in `/tmp/shot-runner-review-3.pDIZPy/repo`.
+- CLI demo from a separate temporary caller folder with a sentinel file.
+- `npm test`, `npm run build`, `npm run pack:cli`, and live `npm run test:a11y`.
+- SHA-256 comparison of live pages/assets with the clean candidate build.
+- Direct probe of the exact displayed registry install command, which failed because the package is not on crates.io.
 
-Local evidence: `.factory/evidence/demo-390.png`, `.factory/evidence/home-390.png`, and `.factory/evidence/home-1440.png`. Fresh clones at `/tmp/shot-runner-polish-2.Ye2g2G` and final `/tmp/shot-runner-final.FTeltI` passed every claim plus the full suite; each produced `target/package/animation-shot-runner-0.1.0.crate`. Product repair commit: `a4430684b4d7e7427a866d9261d9fa104e26353c`; final claim-hardening commit: `5a942ee`.
+## Next steps
 
-Deployed through `/opt/fleet/lib/deploy-static.sh animation-shot-runner dist/site` (Azure deployment `188be8cc-77fc-4157-9870-28e11258a6c4`). A cold live 390 × 844 Chromium check at `https://animation-shot-runner.sociobot.in/demo/?demo=1` found title `Demo — Shot Runner`, one h1 `See five sample previews run.`, the demo banner, first-viewport contact-sheet image, no console errors, and no axe serious/critical issues. Live `/`, `/demo/`, `/privacy/`, and `/terms/` returned their pages; an unknown path returned HTTP 404. Screenshot: `.factory/evidence/live-demo-390.png`.
-
-## Run and deploy
-
-Use `cargo run -p animation-shot-runner -- demo` for the isolated CLI sample. Use `npm run build` to create `dist/site/`. Deployment remains the factory static work order; pushing `main` is the configured handoff trigger.
-
-## Known gaps
-
-None known.
+Resolve F-3-1 through F-3-6 in severity order, extend claim and rendered-accessibility coverage, deploy, and rerun the entire review from a fresh context. Do not treat the passing axe or listed claim suite as coverage for the manually measured contrast, target-size, or unlisted-claim defects.
