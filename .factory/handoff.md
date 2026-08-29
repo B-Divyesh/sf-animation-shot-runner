@@ -1,37 +1,49 @@
-# Handoff — adversarial review 4
+# Handoff — adversarial review 4 repair
 
 ## Outcome
 
-Review 4 is complete at candidate `ad7a95c348c00e0ccdbcd480927c16f7e3008952` and live URL <https://animation-shot-runner.sociobot.in/>.
+The review-4 repair is deployed at <https://animation-shot-runner.sociobot.in/>.
 
-Verdict: **FAIL**. The full report is `.factory/review-4.md`. No product code was changed.
+- Release code commit: `fd536ab3106e1b314cd4b6735332a2d7d1f526d1`
+- Deployment ID: `207d0ad5-7859-4da2-a2e1-e5dbf61c02b7`
+- Verdict: **PASS.** F-4-1/F-2-12, F-4-2, and F-4-3 are fixed. No prior finding regressed.
 
-## Findings left for the next repair round
+## What changed
 
-- **F-4-1 / F-2-12 — BLOCKING:** Home and Demo use **receipt** before explaining that it is a JSON record of output hashes, frame rate, and colour space. This is a half-fixed earlier finding.
-- **F-4-2 — HIGH:** Home → Demo → Back reaches the correct URL but loses y=1200 scroll state; focus remains on `<body>` during forward, back, and forward-again navigation.
-- **F-4-3 — MINOR:** **SR / 01** and **VOL. 01 — 2026** are decorative/cryptic labels rather than useful plain words.
+- Defined a receipt at the first Home and Demo uses; elsewhere used the clear term “JSON output records.”
+- Replaced cryptic masthead/edition labels with **Shot Runner** and a useful local/MIT fact.
+- Added real document-route scroll/focus restoration and polite route announcements for new navigation, Back, and Forward.
+- Added the `route-history` claim/test, documented its short-lived per-tab route marker, and retained the isolated demo namespace.
+- Tightened the phone header and demo spacing so the full wordmark and real contact-sheet output remain visible without horizontal overflow.
+- Updated the copy audit and verb-first catalog description.
 
-## Verification performed
+## Verification
 
-- Fresh Chromium cold reads at 390 × 844 and 1440 × 900.
-- One-click live demo with request logging, real/demo storage sentinels, Reset, Start for real, transcript/contact-sheet first-screen checks, and console capture.
-- Manual live deep-link, 404, metadata, header/footer, fragment, external-link, Back/Forward, scroll, and focus checks.
-- Live browser-quality suite, five-route axe suite, and `/opt/fleet/lib/verify-url.sh`.
-- Every one of the 17 exact `.factory/claims.json` commands, independently, after `npm ci` in clean clone `/tmp/shot-runner-review4-clean.ekot2m/repo`.
-- A separate `shot-runner demo` run from `/tmp/shot-runner-review4-caller.*`, confirming five renders, five cache hits, five receipts, five contact sheets, and caller-file isolation.
-- Clean-clone `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli`.
-- Built/live SHA-256 comparison for Home, Demo, Privacy, Terms, 404, and `sw.js`; all matched.
+Fresh remote clone `/tmp/shot-runner-polish4-clean.GFL9Sy/repo` at the release code commit:
 
-## Passing evidence summary
+- `npm ci` passed.
+- Every exact command in all 18 `.factory/claims.json` entries passed independently.
+- `cargo fmt --all -- --check` and `cargo clippy --workspace --all-targets -- -D warnings` passed.
+- `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli` passed.
+- Local Lighthouse mobile: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO; LCP 1,359 ms, CLS 0, TBT 0. Report: `.factory/evidence/lighthouse.json`.
 
-- All 17 declared claims passed; no listed claim is untested.
-- Demo sandbox, offline reload, same-origin request boundary, Reset, and exit cleanup passed.
-- Clean build produced the release CLI and `dist/site/`.
-- Axe reported 155 checks and zero violations across five routes.
-- Live route/link/404/metadata/security-header checks passed except for the scroll/focus behavior in F-4-2.
-- The distinct broadsheet identity matches `.factory/design.md`.
+Post-deploy cold checks:
 
-## Next steps
+- `/opt/fleet/lib/verify-url.sh` returned 200 with zero console errors, title/lang/one h1/main/alt/button checks passing. Evidence: `.factory/evidence/live-polish4/verify.json`.
+- Live `npm run test:browser` passed at 390 × 844; live axe reported 154 checks and 0 violations across Home, Demo, Privacy, Terms, and 404.
+- Live `@claim:isolated-browser-demo`, `@claim:route-history`, and `@claim:offline-opened-pages` passed.
+- Live `/`, `/demo/?demo=1`, `/privacy/`, and `/terms/` returned 200; `/missing-polish-4` returned the designed 404.
+- Built/live SHA-256 values match for Home, Demo, Privacy, Terms, 404, and `sw.js`.
 
-Repair only the three findings above, add the specified terminology and navigation regressions, redeploy, and rerun the entire adversarial checklist from a fresh browser and clean clone.
+Screenshots: `.factory/evidence/live-polish4-home-390.png`, `.factory/evidence/live-polish4-demo-390.png`, and `.factory/evidence/live-polish4-home-1440.png`.
+
+## Run and release
+
+- Develop/test: `npm ci && npm test`
+- Build CLI and static site: `npm run build`
+- Package without publishing: `npm run pack:cli`
+- The CLI sample: `cargo run -p animation-shot-runner -- demo`
+
+## Known gaps
+
+None. The product remains a local CLI plus static documentation site; no publishing was attempted.
