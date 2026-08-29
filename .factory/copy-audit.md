@@ -33,3 +33,7 @@ All sentences are 22 words or fewer. Banned marketing words were not used. The u
 | Reused generated frames | local cache |
 | Hash record | receipt |
 | Bundled try-out | sample demo |
+
+## Round 2 additions
+
+The new first-screen demo wording is plain and result-led: “See five sample previews run.” The immediately adjacent terminal recording shows the command, five rendered shots, five cache hits, receipt verification, and its temporary output path. “JSON receipt” is now defined on first use as a file that records output hashes, frame rate, and colour space. The README exit-code explanation is split into sentences of 22 words or fewer. No banned marketing terms were added.

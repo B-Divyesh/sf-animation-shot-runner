@@ -39,14 +39,21 @@ async function expectText(page, value) { await page.getByText(value, {exact: fal
 
 if (selected('@claim:demo-five-shot')) cargo('demo_renders_five_bundled_shots_in_a_new_temp_folder');
 if (selected('@claim:demo-cache-and-receipt')) cargo('demo_receipt_detects_a_tampered_sample_frame');
+if (selected('@claim:demo-project-isolation')) cargo('demo_leaves_the_callers_project_files_unchanged');
 if (selected('@claim:review-before-run')) cargo('requires_confirmation_before_execution');
+if (selected('@claim:exact-plan-command')) cargo('planned_argv_is_the_complete_argv_recorded_after_execution');
+if (selected('@claim:run-output-set') || selected('@claim:unchanged-run-cache')) cargo('runs_caches_and_verifies_a_real_preview');
+if (selected('@claim:direct-command-expansion')) cargo('direct_command_expands_every_placeholder_without_shell_interpretation');
+if (selected('@claim:relative-paths-and-exit-codes')) cargo('documented_relative_paths_cache_and_exit_codes_hold');
 if (selected('@claim:isolated-browser-demo')) await browserDemo();
-if (selected('@claim:local-files-and-license')) {
-  cargo('demo_renders_five_bundled_shots_in_a_new_temp_folder');
+if (selected('@claim:mit-license')) {
   const license = readFileSync('LICENSE', 'utf8');
-  const source = readFileSync('crates/shot-runner/src/lib.rs', 'utf8');
   assert.match(license, /Permission is hereby granted, free of charge/, 'the distributed license must contain the MIT grant');
-  assert.match(source, /let output_root = safe_join/, 'run output must resolve under the manifest directory');
-  assert.match(source, /fs::write\(&receipt_path/, 'a run must write a local receipt');
+}
+if (selected('@claim:renderer-dependencies')) {
+  cargo('runs_caches_and_verifies_a_real_preview');
+  const packed = spawnSync('cargo', ['package', '--manifest-path', 'crates/shot-runner/Cargo.toml', '--allow-dirty', '--list'], {encoding: 'utf8'});
+  assert.equal(packed.status, 0, packed.stderr);
+  assert.doesNotMatch(packed.stdout, /(^|\/)ffmpeg(\.|$)|(^|\/)blender(\.|$)/im, 'the crate ships no renderer binary');
 }
 console.log(requested ? `claim test passed: ${requested}` : 'all claim tests passed');

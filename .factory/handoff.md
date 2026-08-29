@@ -1,20 +1,29 @@
-# Handoff — adversarial review 2
+# Handoff — polish round 2
 
-Completed a documentation-only adversarial review of the deployed Shot Runner candidate. Product source was not modified.
+Repaired the review-2 release candidate. The distinct warm-newsprint broadsheet identity remains intact.
 
 ## Delivered
 
-- Added `.factory/review-2.md` with cold 390 px and desktop checks, full landing/README copy audit with word counts, demo/sandbox evidence, claim-by-claim clean-clone results, route/metadata/link checks, history revalidation, and verdict.
-- The verdict is **FAIL**. Blocking findings are the below-fold demo recording/first-screen result and incomplete claims coverage (including unlisted public claims). The report gives concrete fixes.
+- The one-click `/demo/?demo=1` path now shows the real `shot-runner demo` transcript and a real generated contact sheet in its first mobile viewport. It retains the isolated banner, Reset demo, and Start for real controls.
+- Added 12 behavior-level claims in `.factory/claims.json`, including cache/tamper, caller-folder isolation, exact planned argv, ordinary-run outputs/cache, renderer dependency boundaries, direct argv expansion, documented relative paths/exits, browser isolation, and MIT license coverage.
+- Added complete Twitter metadata to Demo, Privacy, Terms, and 404; tightened receipt and exit-code wording; refreshed screenshot evidence and copy audit.
 
-## Verification performed
+## Verification
 
-- Fresh live Chromium contexts at 390 × 844 and 1440 × 900: no console errors, no horizontal overflow, same-origin requests only.
-- Fresh browser demo: redirect, demo banner, separate `demo:` storage, Reset demo, Start for real, and request-log isolation checked.
-- CLI `shot-runner demo` executed from a separate temporary working directory and printed five rendered shots, five cache hits, receipt verification, and an isolated output path.
-- Fresh local clone `/tmp/shot-runner-review-2.WYtvD6`: all five exact commands in `.factory/claims.json` passed; `npm test`, `npm run build`, `npm run test:a11y` (39 passes, 0 violations), and `npm run pack:cli` passed.
-- Live route/header checks confirmed normal routes/assets, sitemap/robots, and a designed HTTP 404.
+- `npm ci`
+- Every exact command in `.factory/claims.json` from the repaired clean tree.
+- `npm test` — Rust unit/integration, site contract, all claims, and PWA offline regression passed.
+- `npm run build` — `dist/site/` produced; initial JS 0.88 kB gzip and CSS 3.84 kB gzip.
+- `npm run test:a11y` — 39 axe passes, 0 violations, 0 serious/critical.
+- `npm run pack:cli` — publishable crate package passed.
+- `node site/tests/capture.mjs` — fresh 390 px demo/home and 1440 px home screenshots with no console errors.
+
+Local evidence: `.factory/evidence/demo-390.png`, `.factory/evidence/home-390.png`, and `.factory/evidence/home-1440.png`. The commit and live deployment re-check are recorded after push.
+
+## Run and deploy
+
+Use `cargo run -p animation-shot-runner -- demo` for the isolated CLI sample. Use `npm run build` to create `dist/site/`. Deployment remains the factory static work order; pushing `main` is the configured handoff trigger.
 
 ## Known gaps
 
-See blocking F-2-1 through F-2-10, plus F-2-11 and F-2-12, in `.factory/review-2.md`. No code changes were made in this review handoff.
+None known.

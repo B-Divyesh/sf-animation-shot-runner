@@ -11,6 +11,9 @@ for (const page of pages) {
   assert.match(html, /rel="canonical"/, `${page} needs canonical URL`);
   assert.match(html, /property="og:title"/, `${page} needs Open Graph title`);
   assert.match(html, /name="twitter:card"/, `${page} needs Twitter card`);
+  assert.match(html, /name="twitter:title"/, `${page} needs Twitter title`);
+  assert.match(html, /name="twitter:description"/, `${page} needs Twitter description`);
+  assert.match(html, /name="twitter:image"/, `${page} needs Twitter image`);
   assert.match(html, /apple-touch-icon/, `${page} needs touch icon`);
 }
 const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8');

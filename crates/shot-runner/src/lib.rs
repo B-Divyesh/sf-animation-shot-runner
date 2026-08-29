@@ -788,6 +788,9 @@ mod tests {
         assert_eq!(first.rendered, 1);
         assert_eq!(first.cache_hits, 0);
         let receipt = dir.path().join("previews/sq010/receipt.json");
+        assert!(dir.path().join("previews/sq010/frames/frame-0001.png").is_file());
+        assert!(dir.path().join("previews/sq010/contact-sheet.png").is_file());
+        assert!(receipt.is_file());
         assert!(verify(&receipt).unwrap().valid);
 
         let second = run(&path, None, &["cp".into()], true, None).unwrap();

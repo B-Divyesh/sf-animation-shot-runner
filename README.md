@@ -2,7 +2,7 @@
 
 Render named animation previews from one command.
 
-Shot Runner is for small animation teams and technical artists. It runs renderer commands you approve. It writes frames, contact sheets, and JSON receipts on your computer.
+Shot Runner is for small animation teams and technical artists. It runs renderer commands you approve. It writes frames, contact sheets, and JSON receipts on your computer. A receipt records output hashes, frame rate, and colour space.
 
 ## Try the bundled sample
 
@@ -60,11 +60,11 @@ shot-runner run shots.json --allow-command blender --yes
 shot-runner verify previews/sq010-door/receipt.json
 ```
 
-`plan` does not execute commands. `run` requires an approved executable name and `--yes`. Each successful shot writes copied frames, `contact-sheet.png`, and `receipt.json`. A second unchanged run uses the local cache.
+`plan` does not execute commands. `run` requires an approved executable name and `--yes`. A successful run writes copied frames, `contact-sheet.png`, and `receipt.json`. A second unchanged run uses the local cache.
 
 With `shot-runner run project/shots.json`, paths resolve from the `project` folder. Use the same `--cache-dir` value with `plan` and `run` when you set one.
 
-Exit codes are `0` for success, `2` for a shot-file error, `3` when approval is missing, `4` when the renderer fails, and `5` for output or receipt failures.
+Exit 0 means success. Exit 2 means the shot file is invalid. Exit 3 means approval is missing. See `shot-runner --help` for other errors.
 
 ## Develop and verify
 
@@ -76,7 +76,7 @@ npm run test:a11y
 npm run pack:cli
 ```
 
-`npm run build` creates the deployable site in `dist/site/`. `cargo package --manifest-path crates/shot-runner/Cargo.toml` creates the publishable crate. Do not publish from this repository.
+`npm run build` creates the deployable site in `dist/site/`. The factory static work order deploys `main`; do not change infrastructure here. `cargo package --manifest-path crates/shot-runner/Cargo.toml` creates the publishable crate. Do not publish the crate from this repository.
 
 ## Privacy and license
 
