@@ -1,76 +1,37 @@
-# Handoff — perfection loop round 3
+# Handoff — adversarial review 4
 
 ## Outcome
 
-All findings from adversarial reviews 1–3 are resolved. The CLI remains the artifact, and the Vite site remains its static documentation/demo surface. The monochrome production-broadsheet identity is unchanged.
+Review 4 is complete at candidate `ad7a95c348c00e0ccdbcd480927c16f7e3008952` and live URL <https://animation-shot-runner.sociobot.in/>.
 
-Repair commit `d22f11db12f2876d39440cd207d601e7310030de` is pushed to `main`. The deployed site was built from that commit. Deployment `3f3104b9-bb52-45ef-a936-88f9c929dbf9` completed successfully at <https://animation-shot-runner.sociobot.in/>.
+Verdict: **FAIL**. The full report is `.factory/review-4.md`. No product code was changed.
 
-## What changed
+## Findings left for the next repair round
 
-- Replaced the broken crates.io command with a pinned, working Git install and a visible GitHub source/install link.
-- Expanded `.factory/claims.json` to 17 claims. New tests cover installation, receipt metadata, offline pages, build output, package output, and demo exit cleanup.
-- Split normal output and cache claims into distinct Rust tests. Demo assertions now inspect every output for all five sample shots.
-- **Start for real** removes the complete demo namespace while preserving real storage.
-- Corrected the demo label contrast to 16.07:1 and the additional dark-section contrast defect found by the expanded axe sweep.
-- Made every visible phone action at least 44 × 44 CSS px.
-- Fit the full home story and the full demo result inside 390 × 844 first viewports.
-- Standardised **executable name** across the site and README.
-- Kept complete route titles, share metadata, canonical links, legal navigation, focus treatment, offline shell, and designed 404 behavior.
-- Updated the catalog description to: “Run repeatable animation previews for named shots from one local command.”
+- **F-4-1 / F-2-12 — BLOCKING:** Home and Demo use **receipt** before explaining that it is a JSON record of output hashes, frame rate, and colour space. This is a half-fixed earlier finding.
+- **F-4-2 — HIGH:** Home → Demo → Back reaches the correct URL but loses y=1200 scroll state; focus remains on `<body>` during forward, back, and forward-again navigation.
+- **F-4-3 — MINOR:** **SR / 01** and **VOL. 01 — 2026** are decorative/cryptic labels rather than useful plain words.
 
-The complete finding-to-change-to-evidence matrix is in `.factory/polish-3.md`.
+## Verification performed
 
-## Clean-clone verification
+- Fresh Chromium cold reads at 390 × 844 and 1440 × 900.
+- One-click live demo with request logging, real/demo storage sentinels, Reset, Start for real, transcript/contact-sheet first-screen checks, and console capture.
+- Manual live deep-link, 404, metadata, header/footer, fragment, external-link, Back/Forward, scroll, and focus checks.
+- Live browser-quality suite, five-route axe suite, and `/opt/fleet/lib/verify-url.sh`.
+- Every one of the 17 exact `.factory/claims.json` commands, independently, after `npm ci` in clean clone `/tmp/shot-runner-review4-clean.ekot2m/repo`.
+- A separate `shot-runner demo` run from `/tmp/shot-runner-review4-caller.*`, confirming five renders, five cache hits, five receipts, five contact sheets, and caller-file isolation.
+- Clean-clone `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli`.
+- Built/live SHA-256 comparison for Home, Demo, Privacy, Terms, 404, and `sw.js`; all matched.
 
-Fresh clone: `/tmp/shot-runner-clean-polish-3.gbKKOe/repo` at `d22f11db12f2876d39440cd207d601e7310030de`.
+## Passing evidence summary
 
-- `npm ci` — passed; 0 vulnerabilities.
-- Every one of the 17 exact `test` commands in `.factory/claims.json` — passed independently.
-- `cargo fmt --check` — passed.
-- `cargo clippy --workspace --all-targets -- -D warnings` — passed.
-- `npm test` — passed: 8 library tests, 3 demo tests, 6 integration tests, site contract, all 17 claims, offline/PWA, and browser quality.
-- `npm run build` — passed; created `target/release/shot-runner` and `dist/site/`.
-- `npm run test:a11y` — 155 axe route checks, 0 violations across five routes.
-- `npm run pack:cli` — passed; 15 files, 74.8 KiB unpacked, 18.7 KiB compressed, package verification compiled.
-- `node site/tests/capture.mjs` — passed with no browser console errors.
+- All 17 declared claims passed; no listed claim is untested.
+- Demo sandbox, offline reload, same-origin request boundary, Reset, and exit cleanup passed.
+- Clean build produced the release CLI and `dist/site/`.
+- Axe reported 155 checks and zero violations across five routes.
+- Live route/link/404/metadata/security-header checks passed except for the scroll/focus behavior in F-4-2.
+- The distinct broadsheet identity matches `.factory/design.md`.
 
-Build budgets: initial JavaScript 2.11 kB raw / 0.98 kB gzip; CSS 14.43 kB raw / 3.96 kB gzip; fonts 35.74 kB total; mobile proof image 29.57 kB.
+## Next steps
 
-## Live verification
-
-- `/opt/fleet/lib/verify-url.sh https://animation-shot-runner.sociobot.in/ .factory/evidence/live-final` — HTTP 200, 677 ms load, zero console errors, correct title/lang, one h1, main landmark, no missing image alt, no unnamed buttons.
-- Home, Demo, Privacy, Terms, `robots.txt`, and `sitemap.xml` returned 200. `/missing-polish-3-cold` returned the designed 404 with HTTP 404.
-- Every discovered home link returned 200, including the GitHub install link.
-- `TEST_ORIGIN=https://animation-shot-runner.sociobot.in npm run test:browser` — passed all five routes at 390 × 844.
-- `TEST_URL=https://animation-shot-runner.sociobot.in/ npm run test:a11y` — 155 checks, 0 violations.
-- Live `@claim:isolated-browser-demo` — passed request isolation, Reset, demo cleanup, and real-sentinel preservation.
-- Live `@claim:offline-opened-pages` — passed controlled offline reload, including the sample contact sheet.
-- Lighthouse mobile — Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,222 ms, CLS 0, TBT 0 ms.
-- Live response headers include self-only CSP/connect policy, framing protections, permissions policy, and referrer policy. `sw.js` is `no-cache`; hashed assets are immutable.
-- Built/live SHA-256 values matched for Home, Demo, Privacy, Terms, 404, and `sw.js`.
-
-Evidence: `.factory/evidence/live-home-390.png`, `live-demo-390.png`, `live-home-1440.png`, `live-final/verify.json`, `axe.json`, and `lighthouse.json`.
-
-## Run, package, and deploy
-
-```sh
-npm ci
-npm test
-npm run build
-npm run test:a11y
-npm run pack:cli
-```
-
-The work order deployment command was:
-
-```sh
-npm ci && npm run build:site
-/opt/fleet/lib/deploy-static.sh animation-shot-runner dist/site
-```
-
-Registry publication remains factory-owned. Until the factory publishes a crate release, the tested pinned Git command is the supported install path.
-
-## Known gaps
-
-None within this work order. No review finding remains open.
+Repair only the three findings above, add the specified terminology and navigation regressions, redeploy, and rerun the entire adversarial checklist from a fresh browser and clean clone.
