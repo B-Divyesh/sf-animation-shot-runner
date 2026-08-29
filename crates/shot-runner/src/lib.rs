@@ -691,7 +691,7 @@ impl io::Write for HashWriter<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
+    use tempfile::{TempDir, tempdir};
 
     fn manifest(command: Vec<String>) -> Manifest {
         Manifest {
@@ -706,6 +706,25 @@ mod tests {
                 command,
             }],
         }
+    }
+
+    fn preview_fixture(fps: f64, colorspace: &str) -> (TempDir, PathBuf) {
+        let dir = tempdir().unwrap();
+        fs::write(dir.path().join("source.txt"), "source-v1").unwrap();
+        DynamicImage::ImageRgba8(ImageBuffer::from_pixel(80, 45, Rgba([20, 30, 40, 255])))
+            .save(dir.path().join("fixture.png"))
+            .unwrap();
+        let mut data = manifest(vec![
+            "cp".into(),
+            "fixture.png".into(),
+            "{frames}/frame-0001.png".into(),
+        ]);
+        data.shots[0].source = "source.txt".into();
+        data.shots[0].fps = fps;
+        data.shots[0].colorspace = colorspace.into();
+        let path = dir.path().join("shots.json");
+        fs::write(&path, serde_json::to_vec_pretty(&data).unwrap()).unwrap();
+        (dir, path)
     }
 
     #[test]
@@ -768,33 +787,60 @@ mod tests {
     }
 
     #[test]
-    fn runs_caches_and_verifies_a_real_preview() {
-        let dir = tempdir().unwrap();
-        fs::write(dir.path().join("source.txt"), "source-v1").unwrap();
-        let fixture = dir.path().join("fixture.png");
-        DynamicImage::ImageRgba8(ImageBuffer::from_pixel(80, 45, Rgba([20, 30, 40, 255])))
-            .save(&fixture)
-            .unwrap();
-        let mut data = manifest(vec![
-            "cp".into(),
-            "fixture.png".into(),
-            "{frames}/frame-0001.png".into(),
-        ]);
-        data.shots[0].source = "source.txt".into();
-        let path = dir.path().join("shots.json");
-        fs::write(&path, serde_json::to_vec_pretty(&data).unwrap()).unwrap();
-
+    fn run_writes_copied_frames_contact_sheet_and_receipt() {
+        let (dir, path) = preview_fixture(24.0, "sRGB");
         let first = run(&path, None, &["cp".into()], true, None).unwrap();
         assert_eq!(first.rendered, 1);
         assert_eq!(first.cache_hits, 0);
         let receipt = dir.path().join("previews/sq010/receipt.json");
-        assert!(dir.path().join("previews/sq010/frames/frame-0001.png").is_file());
-        assert!(dir.path().join("previews/sq010/contact-sheet.png").is_file());
+        assert!(
+            dir.path()
+                .join("previews/sq010/frames/frame-0001.png")
+                .is_file()
+        );
+        assert!(
+            dir.path()
+                .join("previews/sq010/contact-sheet.png")
+                .is_file()
+        );
         assert!(receipt.is_file());
         assert!(verify(&receipt).unwrap().valid);
+    }
 
+    #[test]
+    fn second_unchanged_run_reuses_local_cache() {
+        let (_dir, path) = preview_fixture(24.0, "sRGB");
+        let first = run(&path, None, &["cp".into()], true, None).unwrap();
+        assert_eq!(first.rendered, 1);
         let second = run(&path, None, &["cp".into()], true, None).unwrap();
         assert_eq!(second.rendered, 0);
         assert_eq!(second.cache_hits, 1);
+    }
+
+    #[test]
+    fn receipt_records_verified_hashes_fps_and_colorspace() {
+        let (dir, path) = preview_fixture(23.976, "Display P3");
+        run(&path, None, &["cp".into()], true, None).unwrap();
+
+        let receipt_path = dir.path().join("previews/sq010/receipt.json");
+        let receipt: Receipt = serde_json::from_slice(&fs::read(&receipt_path).unwrap()).unwrap();
+        let written_frame = dir.path().join("previews/sq010/frames/frame-0001.png");
+        let contact_sheet = dir.path().join("previews/sq010/contact-sheet.png");
+
+        assert_eq!(receipt.fps, 23.976);
+        assert_eq!(receipt.colorspace, "Display P3");
+        assert_eq!(
+            receipt.source_sha256,
+            hash_file(&dir.path().join("source.txt")).unwrap()
+        );
+        assert_eq!(receipt.frames.len(), 1);
+        assert_eq!(receipt.frames[0].sha256, hash_file(&written_frame).unwrap());
+        assert_eq!(
+            receipt.contact_sheet.sha256,
+            hash_file(&contact_sheet).unwrap()
+        );
+        let verified = verify(&receipt_path).unwrap();
+        assert!(verified.valid);
+        assert_eq!(verified.checked, 2);
     }
 }
