@@ -1,50 +1,33 @@
-# Handoff — adversarial review 4 repair
+# Handoff — adversarial review 5
 
 ## Outcome
 
-The review-4 repair is deployed at <https://animation-shot-runner.sociobot.in/>.
+Review 5 completed with **PASS** at commit `64df06e35cb04ddf9fbc148e8b146cfd49df6b6c`. No product code was changed. The review record is `.factory/review-5.md`.
 
-- Release code commit: `29f2312feb8ae2e66637149b9b569dbf9d4b9c86`
-- Deployment ID: `117ee6ea-fda9-4708-939c-597c282e2c2c`
-- Verdict: **PASS.** F-4-1/F-2-12, F-4-2, and F-4-3 are fixed. No prior finding regressed.
+## What was checked
 
-## What changed
+- Fresh live phone (390 × 844) and desktop (1440 × 900) first reads.
+- Direct browser demo entry, demo storage/reset/exit behaviour, same-origin request log, and the bundled CLI demo from a temporary caller directory.
+- Every earlier review and polish finding against current live behaviour and source/tests.
+- All 18 exact `.factory/claims.json` commands independently from a fresh clone.
+- Full clean-clone quality chain: `npm test`, build, live axe/browser checks, package, `cargo fmt`, and clippy.
+- Routes, 404, metadata, links, focus/history, offline behaviour, visual identity, README, and complete landing/README copy counts.
 
-- Defined a receipt at the first Home and Demo uses; elsewhere used the clear term “JSON output records.”
-- Replaced cryptic masthead/edition labels with **Shot Runner** and a useful local/MIT fact.
-- Added real document-route scroll/focus restoration and polite route announcements for new navigation, Back, and Forward.
-- Added the `route-history` claim/test, documented its short-lived per-tab route marker, and retained the isolated demo namespace.
-- Tightened the phone header and demo spacing so the full wordmark and real contact-sheet output remain visible without horizontal overflow.
-- Preserved a source-space across visual heading line breaks so assistive text reads “animation previews” and “sample previews” correctly.
-- Updated the copy audit and verb-first catalog description.
+## Verification commands
 
-## Verification
+```sh
+npm ci
+npm test
+npm run build
+TEST_URL=https://animation-shot-runner.sociobot.in npm run test:a11y
+TEST_ORIGIN=https://animation-shot-runner.sociobot.in npm run test:browser
+npm run pack:cli
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+```
 
-Fresh remote clone `/tmp/shot-runner-polish4-final-clean.XSp6l1/repo` at the release code commit:
-
-- `npm ci` passed.
-- Every exact command in all 18 `.factory/claims.json` entries passed independently.
-- `cargo fmt --all -- --check` and `cargo clippy --workspace --all-targets -- -D warnings` passed.
-- `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli` passed.
-- Local Lighthouse mobile: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO; LCP 1,359 ms, CLS 0, TBT 0. Report: `.factory/evidence/lighthouse.json`.
-
-Post-deploy cold checks:
-
-- `/opt/fleet/lib/verify-url.sh` returned 200 with zero console errors, title/lang/one h1/main/alt/button checks passing. Evidence: `.factory/evidence/live-polish4-final/verify.json`.
-- Live `npm run test:browser` passed at 390 × 844; live axe reported 154 checks and 0 violations across Home, Demo, Privacy, Terms, and 404.
-- Live `@claim:isolated-browser-demo`, `@claim:route-history`, and `@claim:offline-opened-pages` passed.
-- Live `/`, `/demo/?demo=1`, `/privacy/`, and `/terms/` returned 200; `/missing-polish-4` returned the designed 404.
-- Built/live SHA-256 values match for Home, Demo, Privacy, Terms, 404, and `sw.js`.
-
-Screenshots: `.factory/evidence/live-polish4-final-home-390.png`, `.factory/evidence/live-polish4-final-demo-390.png`, and `.factory/evidence/live-polish4-final-home-1440.png`.
-
-## Run and release
-
-- Develop/test: `npm ci && npm test`
-- Build CLI and static site: `npm run build`
-- Package without publishing: `npm run pack:cli`
-- The CLI sample: `cargo run -p animation-shot-runner -- demo`
+The build produced `target/release/shot-runner` and `dist/site/`; package output included `animation-shot-runner-0.1.0.crate`.
 
 ## Known gaps
 
-None. The product remains a local CLI plus static documentation site; no publishing was attempted.
+None found. Maintain the claim registry and its clean-state tests for any future public copy or behaviour change.
