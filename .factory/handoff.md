@@ -4,8 +4,8 @@
 
 The review-4 repair is deployed at <https://animation-shot-runner.sociobot.in/>.
 
-- Release code commit: `fd536ab3106e1b314cd4b6735332a2d7d1f526d1`
-- Deployment ID: `207d0ad5-7859-4da2-a2e1-e5dbf61c02b7`
+- Release code commit: `29f2312feb8ae2e66637149b9b569dbf9d4b9c86`
+- Deployment ID: `117ee6ea-fda9-4708-939c-597c282e2c2c`
 - Verdict: **PASS.** F-4-1/F-2-12, F-4-2, and F-4-3 are fixed. No prior finding regressed.
 
 ## What changed
@@ -15,11 +15,12 @@ The review-4 repair is deployed at <https://animation-shot-runner.sociobot.in/>.
 - Added real document-route scroll/focus restoration and polite route announcements for new navigation, Back, and Forward.
 - Added the `route-history` claim/test, documented its short-lived per-tab route marker, and retained the isolated demo namespace.
 - Tightened the phone header and demo spacing so the full wordmark and real contact-sheet output remain visible without horizontal overflow.
+- Preserved a source-space across visual heading line breaks so assistive text reads “animation previews” and “sample previews” correctly.
 - Updated the copy audit and verb-first catalog description.
 
 ## Verification
 
-Fresh remote clone `/tmp/shot-runner-polish4-clean.GFL9Sy/repo` at the release code commit:
+Fresh remote clone `/tmp/shot-runner-polish4-final-clean.XSp6l1/repo` at the release code commit:
 
 - `npm ci` passed.
 - Every exact command in all 18 `.factory/claims.json` entries passed independently.
@@ -29,13 +30,13 @@ Fresh remote clone `/tmp/shot-runner-polish4-clean.GFL9Sy/repo` at the release c
 
 Post-deploy cold checks:
 
-- `/opt/fleet/lib/verify-url.sh` returned 200 with zero console errors, title/lang/one h1/main/alt/button checks passing. Evidence: `.factory/evidence/live-polish4/verify.json`.
+- `/opt/fleet/lib/verify-url.sh` returned 200 with zero console errors, title/lang/one h1/main/alt/button checks passing. Evidence: `.factory/evidence/live-polish4-final/verify.json`.
 - Live `npm run test:browser` passed at 390 × 844; live axe reported 154 checks and 0 violations across Home, Demo, Privacy, Terms, and 404.
 - Live `@claim:isolated-browser-demo`, `@claim:route-history`, and `@claim:offline-opened-pages` passed.
 - Live `/`, `/demo/?demo=1`, `/privacy/`, and `/terms/` returned 200; `/missing-polish-4` returned the designed 404.
 - Built/live SHA-256 values match for Home, Demo, Privacy, Terms, 404, and `sw.js`.
 
-Screenshots: `.factory/evidence/live-polish4-home-390.png`, `.factory/evidence/live-polish4-demo-390.png`, and `.factory/evidence/live-polish4-home-1440.png`.
+Screenshots: `.factory/evidence/live-polish4-final-home-390.png`, `.factory/evidence/live-polish4-final-demo-390.png`, and `.factory/evidence/live-polish4-final-home-1440.png`.
 
 ## Run and release
 

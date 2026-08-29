@@ -1,7 +1,7 @@
 # Polish 4 — complete adversarial repair
 
-**Release code commit:** `fd536ab3106e1b314cd4b6735332a2d7d1f526d1`  
-**Deployment:** `207d0ad5-7859-4da2-a2e1-e5dbf61c02b7`  
+**Release code commit:** `29f2312feb8ae2e66637149b9b569dbf9d4b9c86`
+**Deployment:** `117ee6ea-fda9-4708-939c-597c282e2c2c`
 **Live URL:** <https://animation-shot-runner.sociobot.in/>
 
 Every finding from reviews 1–4 and prior polish records was rechecked. No severity was deferred.
@@ -10,23 +10,23 @@ Every finding from reviews 1–4 and prior polish records was rechecked. No seve
 
 | Finding | Change made | Evidence |
 | --- | --- | --- |
-| F-4-1 / F-2-12 | Removed the unexplained proof-caption use of “receipt.” The first Home use is now “a JSON receipt that records output hashes, frame rate, and colour space.” The first Demo use defines the same file before its transcript uses the term. Legal/footer copy uses “JSON output records” where it does not need the term. | `site/tests/site.test.mjs`; `@claim:receipt-metadata`; [live Home 390](/work/repo/.factory/evidence/live-polish4-home-390.png); [live Demo 390](/work/repo/.factory/evidence/live-polish4-demo-390.png); live `/` and `/demo/?demo=1` cold checks. |
+| F-4-1 / F-2-12 | Removed the unexplained proof-caption use of “receipt.” The first Home use is now “a JSON receipt that records output hashes, frame rate, and colour space.” The first Demo use defines the same file before its transcript uses the term. Legal/footer copy uses “JSON output records” where it does not need the term. | `site/tests/site.test.mjs`; `@claim:receipt-metadata`; [live Home 390](/work/repo/.factory/evidence/live-polish4-final-home-390.png); [live Demo 390](/work/repo/.factory/evidence/live-polish4-final-demo-390.png); live `/` and `/demo/?demo=1` cold checks. |
 | F-4-2 | Added history-state scroll/focus snapshots, early pointer activation capture, per-tab route-transition markers, manual scroll restoration, heading focus, and polite announcements. Back and Forward restore the saved scroll/focus state. The privacy page and demo contract disclose the short-lived marker. | `@claim:route-history`; `npm run test:browser`; live `TEST_ORIGIN=https://animation-shot-runner.sociobot.in npm run test:browser`. |
-| F-4-3 | Replaced every visible `SR / 01` wordmark with **Shot Runner** and replaced `VOL. 01 — 2026` with **LOCAL CLI · MIT LICENSED**. The phone header drops only the redundant in-page anchor to keep the full wordmark and real demo output in the first viewport. | `site/tests/site.test.mjs`; `npm run test:browser`; live Home/Demo screenshots above. |
+| F-4-3 | Replaced every visible `SR / 01` wordmark with **Shot Runner** and replaced `VOL. 01 — 2026` with **LOCAL CLI · MIT LICENSED**. The phone header drops only the redundant in-page anchor to keep the full wordmark and real demo output in the first viewport. A final collapsed source-space preserves normal screen-reader heading word boundaries. | `site/tests/site.test.mjs`; `npm run test:browser`; live Home/Demo screenshots above. |
 
 ## Cumulative finding map
 
 | Finding | Current change or retained resolution | Evidence |
 | --- | --- | --- |
-| F-1-1 | First screen remains job-led, names small animation teams and technical artists, and makes **Try it with sample data** primary. | `npm run test:browser`; [live Home 390](/work/repo/.factory/evidence/live-polish4-home-390.png). |
+| F-1-1 | First screen remains job-led, names small animation teams and technical artists, and makes **Try it with sample data** primary. | `npm run test:browser`; [live Home 390](/work/repo/.factory/evidence/live-polish4-final-home-390.png). |
 | F-1-2 | The one-click `?demo=1` redirect, isolated browser banner/reset/exit controls, real CLI transcript, bundled five-shot contact sheet, and temp-directory CLI demo remain present. | `@claim:demo-five-shot`; `@claim:demo-project-isolation`; `@claim:isolated-browser-demo`; live `/demo/?demo=1`. |
-| F-1-3 | The claims registry now contains 18 unique, tagged, clean-state tests, including the new route-history claim. | Every exact command in `.factory/claims.json` passed independently in fresh clone `/tmp/shot-runner-polish4-clean.GFL9Sy/repo`; `site/tests/site.test.mjs`. |
+| F-1-3 | The claims registry now contains 18 unique, tagged, clean-state tests, including the new route-history claim. | Every exact command in `.factory/claims.json` passed independently in fresh clone `/tmp/shot-runner-polish4-final-clean.XSp6l1/repo`; `site/tests/site.test.mjs`. |
 | F-1-4 | Home, Demo, Privacy, and Terms remain real URLs; the configured missing-route response stays a designed HTTP 404. | Live route check: `/` 200, `/demo/?demo=1` 200, `/privacy/` 200, `/terms/` 200, `/missing-polish-4` 404. |
 | F-1-5 | Plain-language copy, named actions, defined receipt terminology, and the copy audit remain complete. | `.factory/copy-audit.md`; `site/tests/site.test.mjs`; live cold read. |
 | F-1-6 | Route titles, canonical/OG/Twitter metadata, touch icon, shared header/footer, legal links, and build footer remain present. | `site/tests/site.test.mjs`; live route/title check; `/opt/fleet/lib/verify-url.sh`. |
 | F-1-7 | Preview server cleanup and PWA/browser suites remain deterministic. | Fresh-clone `npm test`; `npm run test:pwa`; `npm run test:browser`. |
 | F-1-8 | No paid offer, checkout link, or unspecified entitlement promise has returned. | Built-site copy audit; fresh-clone `npm test`. |
-| F-2-1 | The actual command, output transcript, cache check, receipt verification, and generated contact sheet remain in the first phone Demo viewport. | `npm run test:browser`; [live Demo 390](/work/repo/.factory/evidence/live-polish4-demo-390.png). |
+| F-2-1 | The actual command, output transcript, cache check, receipt verification, and generated contact sheet remain in the first phone Demo viewport. | `npm run test:browser`; [live Demo 390](/work/repo/.factory/evidence/live-polish4-final-demo-390.png). |
 | F-2-2 | Cache hits, receipt verification, and tamper failure remain observed together. | `@claim:demo-cache-and-receipt`. |
 | F-2-3 | Caller-folder sentinel and temporary-project isolation remain observed. | `@claim:demo-project-isolation`. |
 | F-2-4 | Planned expanded argv still matches the recorded argv. | `@claim:exact-plan-command`. |
@@ -71,7 +71,7 @@ Every finding from reviews 1–4 and prior polish records was rechecked. No seve
 
 ## Final evidence
 
-- Fresh remote clone at `fd536ab3106e1b314cd4b6735332a2d7d1f526d1`: `npm ci`, all 18 exact claim commands independently, `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli` passed.
+- Fresh remote clone at `29f2312feb8ae2e66637149b9b569dbf9d4b9c86`: `npm ci`, all 18 exact claim commands independently, `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `npm test`, `npm run build`, `npm run test:a11y`, and `npm run pack:cli` passed.
 - Local mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1,359 ms, CLS 0, TBT 0. Report: `.factory/evidence/lighthouse.json`.
-- Live: `/opt/fleet/lib/verify-url.sh` reported 200, zero console errors, correct title/lang/one h1/main/alt/button checks. Live axe reported 154 route checks, 0 violations. Live browser-quality and isolated-demo, route-history, and offline claims passed.
+- Live: `/opt/fleet/lib/verify-url.sh` reported 200, zero console errors, correct title/lang/one h1/main/alt/button checks. Live axe reported 154 route checks, 0 violations. Live browser-quality and isolated-demo, route-history, and offline claims passed. Cold route output reads “Render named animation previews …” and “See five sample previews …” with normal word boundaries.
 - The deployed Home, Demo, Privacy, Terms, designed 404, and `sw.js` SHA-256 values exactly match `dist/site/`.
