@@ -18,7 +18,7 @@ Repaired the review-2 release candidate. The distinct warm-newsprint broadsheet 
 - `npm run pack:cli` — publishable crate package passed.
 - `node site/tests/capture.mjs` — fresh 390 px demo/home and 1440 px home screenshots with no console errors.
 
-Local evidence: `.factory/evidence/demo-390.png`, `.factory/evidence/home-390.png`, and `.factory/evidence/home-1440.png`. The commit and live deployment re-check are recorded after push.
+Local evidence: `.factory/evidence/demo-390.png`, `.factory/evidence/home-390.png`, and `.factory/evidence/home-1440.png`. A fresh clone at `/tmp/shot-runner-polish-2.Ye2g2G` passed the same suite and produced `target/package/animation-shot-runner-0.1.0.crate`. Repair commit: `a4430684b4d7e7427a866d9261d9fa104e26353c`.
 
 ## Run and deploy
 
