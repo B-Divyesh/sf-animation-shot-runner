@@ -6,7 +6,7 @@ Shot Runner is for small animation teams and technical artists. It runs renderer
 
 ## Try the bundled sample
 
-Run the five-shot Paper Courier sample after installing from source:
+Run the five-shot Paper Courier sample after installing from GitHub:
 
 ```sh
 cargo run -p animation-shot-runner -- demo
@@ -14,16 +14,18 @@ cargo run -p animation-shot-runner -- demo
 
 The command copies bundled sample files into a new system temporary folder. It renders five named shots. It repeats the run to show cached frames. It checks a receipt and prints the output folder. Your project files are not used.
 
-Open `/demo/?demo=1` on the documentation site for the same sample instructions. The browser demo marker uses a separate `demo:` local-storage key. Use **Reset demo** to reset it or **Start for real** to return home.
+Open [`/demo/?demo=1`](https://animation-shot-runner.sociobot.in/demo/?demo=1) for the same sample output. The browser demo uses separate `demo:` storage. **Reset demo** recreates its marker. **Start for real** discards every demo key and returns home.
 
 ## Install
 
-From source, using Rust 1.85 or newer:
+Install the pinned source revision from GitHub:
 
 ```sh
-cargo install --path crates/shot-runner
+cargo install --git https://github.com/B-Divyesh/sf-animation-shot-runner.git --rev 224935b96570655b27fbf4e26d39dedaaad87cc8 --locked animation-shot-runner
 shot-runner --help
 ```
+
+The first command is the tested install path for this release. See the [source and install notes](https://github.com/B-Divyesh/sf-animation-shot-runner#install).
 
 Shot Runner does not include a renderer. Install and license Blender, Motion Canvas, ffmpeg, or another renderer yourself. Native PNG and JPEG contact sheets do not need ffmpeg.
 
@@ -76,7 +78,9 @@ npm run test:a11y
 npm run pack:cli
 ```
 
-`npm run build` creates the deployable site in `dist/site/`. The factory static work order deploys `main`; do not change infrastructure here. `cargo package --manifest-path crates/shot-runner/Cargo.toml` creates the publishable crate. Do not publish the crate from this repository.
+`npm run build` creates the release CLI and deployable site. The outputs are `target/release/shot-runner` and `dist/site/`.
+
+`npm run pack:cli` creates a checked Rust package in `target/package/`. Do not publish the crate from this repository.
 
 ## Privacy and license
 

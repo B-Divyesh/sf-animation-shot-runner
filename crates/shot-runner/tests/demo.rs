@@ -17,16 +17,24 @@ fn demo_renders_five_bundled_shots_in_a_new_temp_folder() {
     assert_eq!(value["rendered"], 5);
     assert_eq!(value["cache_hits_on_repeat"], 5);
     let directory = value["directory"].as_str().expect("demo directory");
-    assert!(
-        std::path::Path::new(directory)
-            .join("previews/sq010-arrival/contact-sheet.png")
-            .is_file()
-    );
-    assert!(
-        std::path::Path::new(directory)
-            .join("previews/sq050-exit/receipt.json")
-            .is_file()
-    );
+    for shot in [
+        "sq010-arrival",
+        "sq020-door",
+        "sq030-crossing",
+        "sq040-turn",
+        "sq050-exit",
+    ] {
+        let output = std::path::Path::new(directory).join("previews").join(shot);
+        assert!(
+            output.join("frames/frame-0001.png").is_file(),
+            "{shot} frame"
+        );
+        assert!(
+            output.join("contact-sheet.png").is_file(),
+            "{shot} contact sheet"
+        );
+        assert!(output.join("receipt.json").is_file(), "{shot} receipt");
+    }
     fs::remove_dir_all(directory).expect("remove only demo temp directory");
 }
 
@@ -44,6 +52,17 @@ fn demo_receipt_detects_a_tampered_sample_frame() {
     );
     let directory = std::path::PathBuf::from(value["directory"].as_str().expect("demo directory"));
     let receipt = directory.join("previews/sq010-arrival/receipt.json");
+    let valid = Command::new(env!("CARGO_BIN_EXE_shot-runner"))
+        .args(["--json", "verify", receipt.to_str().expect("utf8 receipt")])
+        .output()
+        .expect("verify unchanged sample");
+    assert!(valid.status.success());
+    let verified: Value = serde_json::from_slice(&valid.stdout).expect("verify JSON");
+    assert_eq!(verified["valid"], true);
+    assert_eq!(
+        verified["checked"], 2,
+        "the sample receipt covers its frame and contact sheet"
+    );
     fs::write(
         directory.join("previews/sq010-arrival/frames/frame-0001.png"),
         b"changed",

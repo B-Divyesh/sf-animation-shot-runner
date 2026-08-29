@@ -18,14 +18,18 @@ for (const page of pages) {
 }
 const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 assert.equal((home.match(/<img /g) || []).length, (home.match(/<img [^>]*alt=/g) || []).length, 'every image needs alt');
+assert.match(home, /cargo install --git https:\/\/github\.com\/B-Divyesh\/sf-animation-shot-runner\.git --rev [a-f0-9]{40} --locked animation-shot-runner/, 'home needs a pinned Git install command');
+assert.match(home, /Open source and install on GitHub/, 'home needs a visible source and install link');
+assert.doesNotMatch(home, /approve the program name/, 'approval terminology stays consistent');
 const script = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 assert.match(script, /demo:animation-shot-runner:opened/, 'demo storage must have its own namespace');
 assert.match(script, /location\.replace\('\/demo\/\?demo=1'\)/, 'root demo query opens the real demo route');
+assert.match(script, /startsWith\(DEMO_PREFIX\)/, 'leaving the demo removes its full namespace');
 const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 assert.match(worker, /url\.origin !== self\.location\.origin/, 'service worker caches same-origin assets only');
 assert.match(worker, /license\|token\|entitlement/i, 'service worker rejects license-bearing URLs');
 assert.match(worker, /url\.pathname\.includes\('\/verify'\)/, 'service worker rejects entitlement verification requests');
-assert.match(worker, /shot-runner-v4/, 'service worker cache version advances with its shell');
+assert.match(worker, /shot-runner-v5/, 'service worker cache version advances with its shell');
 const staticPolicy = JSON.parse(readFileSync(new URL('../public/staticwebapp.config.json', import.meta.url), 'utf8'));
 assert.equal(staticPolicy.navigationFallback, undefined, 'static routes must not hide unknown URLs behind the landing page');
 const headers = staticPolicy.globalHeaders;
@@ -40,4 +44,12 @@ assert.ok(immutableRoutes.some(route => route.route === '/assets/*'), 'hashed bu
 assert.ok(immutableRoutes.some(route => /-[a-f0-9]{8}\.(webp|woff2)$/.test(route.route)), 'public immutable assets use content-named URLs');
 assert.equal(staticPolicy.routes.find(route => route.route === '/sw.js')?.headers?.['Cache-Control'], 'no-cache', 'service worker remains updateable');
 assert.equal(staticPolicy.responseOverrides['404'].statusCode, 404, 'unknown routes must return a real 404');
+const claims = JSON.parse(readFileSync(new URL('../../.factory/claims.json', import.meta.url), 'utf8'));
+assert.equal(new Set(claims.map(claim => claim.id)).size, claims.length, 'claim IDs must be unique');
+const claimTests = readFileSync(new URL('claims.mjs', import.meta.url), 'utf8');
+for (const claim of claims) {
+  const tag = `@claim:${claim.id}`;
+  assert.equal(claim.test, `npm run test:claims -- --grep ${tag}`, `${claim.id} exposes its exact tagged test`);
+  assert.equal(claimTests.split(`'${tag}'`).length - 1, 1, `${claim.id} has exactly one tagged test implementation`);
+}
 console.log('site contract checks passed');

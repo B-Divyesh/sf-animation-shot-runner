@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config site/vite.config.js",
-    "test": "cargo test --workspace && node site/tests/site.test.mjs && npm run test:claims && npm run test:pwa",
+    "test": "cargo test --workspace && node site/tests/site.test.mjs && npm run test:claims && npm run test:pwa && npm run test:browser",
     "build:cli": "cargo build --release --locked",
     "build:site": "vite build --config site/vite.config.js",
     "build": "npm run build:cli && npm run build:site",
     "pack:cli": "cargo package --manifest-path crates/shot-runner/Cargo.toml --allow-dirty",
     "test:a11y": "npm run build:site && node site/tests/a11y.mjs",
     "test:pwa": "npm run build:site && node site/tests/pwa-security.mjs",
+    "test:browser": "npm run build:site && node site/tests/browser-quality.mjs",
     "test:claims": "npm run build:site && node site/tests/claims.mjs"
   },
   "devDependencies": {

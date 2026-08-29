@@ -8,7 +8,7 @@ import {setTimeout as delay} from 'node:timers/promises';
 
 const port = 4173;
 const localUrl = `http://127.0.0.1:${port}/`;
-const url = process.env.TEST_URL || localUrl;
+const url = new URL('/', process.env.TEST_URL || localUrl).href;
 const vite = process.env.TEST_URL ? null : spawn(process.execPath, [
   resolve('node_modules/vite/bin/vite.js'),
   'preview',
@@ -34,16 +34,21 @@ let browser;
 try {
   await waitForServer();
   browser = await chromium.launch({headless: true});
-  const context = await browser.newContext({viewport: {width: 390, height: 844}});
-  const page = await context.newPage();
-  await page.goto(url, {waitUntil: 'networkidle'});
-  const results = await new AxeBuilder({page}).analyze();
+  const reports = [];
+  for (const path of ['/', '/demo/?demo=1', '/privacy/', '/terms/', '/404.html']) {
+    const context = await browser.newContext({viewport: {width: 390, height: 844}});
+    const page = await context.newPage();
+    await page.goto(new URL(path, url).href, {waitUntil: 'networkidle'});
+    reports.push({path, results: await new AxeBuilder({page}).analyze()});
+    await context.close();
+  }
   await mkdir('.factory/evidence', {recursive: true});
-  await writeFile('.factory/evidence/axe.json', JSON.stringify(results, null, 2));
-  const serious = results.violations.filter(item => ['serious', 'critical'].includes(item.impact));
-  console.log(`axe: ${results.passes.length} passes, ${results.violations.length} violations, ${serious.length} serious/critical`);
-  for (const violation of serious) console.error(`${violation.impact}: ${violation.id} — ${violation.help}`);
-  if (serious.length) process.exitCode = 1;
+  await writeFile('.factory/evidence/axe.json', JSON.stringify(reports, null, 2));
+  const violations = reports.flatMap(report => report.results.violations.map(violation => ({path: report.path, ...violation})));
+  const passes = reports.reduce((total, report) => total + report.results.passes.length, 0);
+  console.log(`axe: ${passes} route checks passed, ${violations.length} violations across ${reports.length} routes`);
+  for (const violation of violations) console.error(`${violation.path} ${violation.impact}: ${violation.id} — ${violation.help}`);
+  if (violations.length) process.exitCode = 1;
 } finally {
   await browser?.close();
   vite?.kill('SIGTERM');

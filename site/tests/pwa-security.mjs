@@ -31,6 +31,8 @@ try {
   await context.setOffline(true);
   await page.reload({waitUntil: 'domcontentloaded'});
   assert.match(await page.locator('h1').textContent(), /See five sample\s*previews run/, 'opened demo is available offline');
+  await page.locator('.first-recording img').waitFor();
+  assert.ok(await page.locator('.first-recording img').evaluate(image => image.complete && image.naturalWidth > 0), 'demo contact sheet is available offline');
   await context.setOffline(false);
   assert.equal((await fetch(`${origin}/`)).ok, true, 'preview server remains reachable after service-worker reload');
   console.log('PWA demo/offline regression passed');

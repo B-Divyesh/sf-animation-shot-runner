@@ -1,4 +1,4 @@
-const CACHE = 'shot-runner-v4';
+const CACHE = 'shot-runner-v5';
 const SHELL = [
   '/',
   '/index.html',
@@ -11,6 +11,7 @@ const SHELL = [
   '/shot-runner-social-1200x630.webp',
   '/shot-proof-e5786fb0.webp',
   '/shot-proof-768-97c150b8.webp',
+  '/paper-courier-contact-sheet.png',
   '/fonts/instrument-serif-5eb09b5a.woff2',
   '/fonts/ibm-plex-mono-08949f72.woff2',
 ];

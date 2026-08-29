@@ -16,13 +16,25 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
 }));
 
 const DEMO_KEY = 'demo:animation-shot-runner:opened';
+const DEMO_PREFIX = 'demo:animation-shot-runner:';
 const reset = document.querySelector('[data-reset-demo]');
+const startReal = document.querySelector('[data-start-real]');
 const demoNotice = document.querySelector('#demo-notice');
 if (document.body.dataset.demo === 'true') {
   try { localStorage.setItem(DEMO_KEY, 'true'); } catch {}
   reset?.addEventListener('click', () => {
     try { localStorage.removeItem(DEMO_KEY); localStorage.setItem(DEMO_KEY, 'true'); } catch {}
     if (demoNotice) demoNotice.textContent = 'Sample view reset. Run the command again to create a new temporary folder.';
+  });
+  startReal?.addEventListener('click', event => {
+    event.preventDefault();
+    try {
+      for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+        const key = localStorage.key(index);
+        if (key?.startsWith(DEMO_PREFIX)) localStorage.removeItem(key);
+      }
+    } catch {}
+    location.assign(startReal.href);
   });
 }
 
