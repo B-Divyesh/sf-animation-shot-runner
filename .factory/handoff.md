@@ -1,33 +1,29 @@
-# Handoff — adversarial review 5
+# Handoff — independent review 6
 
 ## Outcome
 
-Review 5 completed with **PASS** at commit `64df06e35cb04ddf9fbc148e8b146cfd49df6b6c`. No product code was changed. The review record is `.factory/review-5.md`.
+Review 6 completed with **FAIL**. No product code was changed. The report is `.factory/review-6.md`.
 
-## What was checked
+- Implementation candidate: `29f2312feb8ae2e66637149b9b569dbf9d4b9c86`
+- Documentation reviewed: `4b5fa6d2ceb1c3612b3b4474caeaf7d97956dfe2`
+- Findings: 2
+- Untested claims: 1
 
-- Fresh live phone (390 × 844) and desktop (1440 × 900) first reads.
-- Direct browser demo entry, demo storage/reset/exit behaviour, same-origin request log, and the bundled CLI demo from a temporary caller directory.
-- Every earlier review and polish finding against current live behaviour and source/tests.
-- All 18 exact `.factory/claims.json` commands independently from a fresh clone.
-- Full clean-clone quality chain: `npm test`, build, live axe/browser checks, package, `cargo fmt`, and clippy.
-- Routes, 404, metadata, links, focus/history, offline behaviour, visual identity, README, and complete landing/README copy counts.
+## Findings to resolve
 
-## Verification commands
+1. `shot-runner --help` says **“No shell and no network are used.”** The no-network half is absent from `.factory/claims.json` and is broader than the tested behavior.
+2. **Reset demo** changes its marker, but the completion message is hidden at 390 px and has no live-region semantics at any size.
 
-```sh
-npm ci
-npm test
-npm run build
-TEST_URL=https://animation-shot-runner.sociobot.in npm run test:a11y
-TEST_ORIGIN=https://animation-shot-runner.sociobot.in npm run test:browser
-npm run pack:cli
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-```
+## Verification completed
 
-The build produced `target/release/shot-runner` and `dist/site/`; package output included `animation-shot-runner-0.1.0.crate`.
+- Opened the live Home and Demo in fresh 390 × 844 and 1440 × 900 Chromium contexts.
+- Ran every exact claim command independently from a fresh checkout.
+- Ran `npm test`, `npm run build`, `npm run test:a11y`, `npm run pack:cli`, formatting, and clippy from that checkout.
+- Installed the packed crate into a fresh consumer directory and exercised help, version, init, plan, demo, run, verify, invalid exits, cache recovery, and caller-folder isolation.
+- Checked live routes, deliberate 404, links, metadata, keyboard use, focus/history, reduced motion, axe, offline reload, request origin, storage cleanup, security/cache headers, build parity, and mobile Lighthouse.
 
-## Known gaps
+All declared claims and quality commands passed. Lighthouse scored 99 Performance and 100 for Accessibility, Best Practices, and SEO. The review remains FAIL because acceptance requires zero findings and zero untested claims.
 
-None found. Maintain the claim registry and its clean-state tests for any future public copy or behaviour change.
+## Recheck after repair
+
+Run the documented clean chain and every exact claim command. Add a 390 px keyboard test proving reset feedback is visible and exposed through a polite status region. Remove or accurately narrow and register the CLI no-network sentence.
