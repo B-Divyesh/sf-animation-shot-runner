@@ -21,7 +21,7 @@ Open [`/demo/?demo=1`](https://animation-shot-runner.sociobot.in/demo/?demo=1) f
 Install the pinned source revision from GitHub:
 
 ```sh
-cargo install --git https://github.com/B-Divyesh/sf-animation-shot-runner.git --rev 224935b96570655b27fbf4e26d39dedaaad87cc8 --locked animation-shot-runner
+cargo install --git https://github.com/B-Divyesh/sf-animation-shot-runner.git --rev f142407efa699ed789e1955a36140e83de30ffc1 --locked animation-shot-runner
 shot-runner --help
 ```
 
