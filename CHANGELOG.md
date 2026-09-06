@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Removed the CLI's overbroad no-network statement; approved renderer commands remain outside Shot Runner's network control.
+- Made demo reset completion visible on phones and exposed it as a polite screen-reader status update.
 - Made `plan` disclose both every manifest command token and the exact expanded argv that `run` uses; receipts now provide a direct review/execution parity record.
 - Made manifest-relative command expansions absolute and added coverage for both bare and named relative manifest paths.
 - Added Azure Static Web Apps policy configuration for immutable content-named assets, a compatible CSP, anti-framing, Permissions-Policy, and COOP headers.

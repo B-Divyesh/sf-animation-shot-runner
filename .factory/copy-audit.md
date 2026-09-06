@@ -1,4 +1,4 @@
-# Copy audit — 2026-08-29
+# Copy audit — 2026-09-06
 
 Counts treat hyphenated terms, file names, and command tokens as one word. Controls and labels are audited separately. No sentence exceeds 22 words. No banned marketing word appears.
 
@@ -104,5 +104,6 @@ Fragments and controls checked: **Shot Runner**, **LOCAL CLI · MIT LICENSED**, 
 | 11 | The site keeps a short-lived navigation marker in this browser tab. |
 | 12 | It restores scroll position and focus when you use Back or Forward. |
 | 12 | Return to the Shot Runner home page to run the sample or read the CLI instructions. |
+| 13 | Sample view reset. Run the command again to create a new temporary folder. |
 
 The Demo sentence defines **receipt** before its terminal transcript, steps, and captions use the term. The legal and 404 routes use **JSON output records** rather than an undefined receipt. All scanned route sentences stay within 22 words and contain no banned marketing language.

@@ -50,7 +50,7 @@ async function withPreview(port, test) {
 
 async function browserDemo() {
   await withPreview(4175, async ({browser, origin}) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({viewport: {width: 390, height: 844}});
     const requests = [];
     context.on('request', request => requests.push(request.url()));
     const page = await context.newPage();
@@ -62,8 +62,27 @@ async function browserDemo() {
     assert.equal(await page.locator('input[type="password"], [name*="email" i]').count(), 0, 'sample page asks for no account');
     assert.equal(await page.evaluate(() => localStorage.getItem('demo:animation-shot-runner:opened')), 'true');
     assert.equal(await page.evaluate(() => localStorage.getItem('sb_license:animation-shot-runner')), null);
-    await page.getByRole('button', {name: 'Reset demo'}).click();
-    await page.getByText('Sample view reset.', {exact: false}).first().waitFor();
+    await page.evaluate(() => localStorage.setItem('demo:animation-shot-runner:opened', 'stale'));
+    const reset = page.getByRole('button', {name: 'Reset demo'});
+    await reset.focus();
+    await page.keyboard.press('Space');
+    const resetStatus = page.locator('#demo-notice');
+    await resetStatus.getByText('Sample view reset.', {exact: false}).waitFor();
+    assert.equal(await resetStatus.isVisible(), true, 'phone users see reset completion');
+    assert.deepEqual(
+      await resetStatus.evaluate(element => ({
+        role: element.getAttribute('role'),
+        live: element.getAttribute('aria-live'),
+        atomic: element.getAttribute('aria-atomic'),
+      })),
+      {role: 'status', live: 'polite', atomic: 'true'},
+      'reset completion is exposed as one polite status update',
+    );
+    assert.equal(
+      await page.evaluate(() => localStorage.getItem('demo:animation-shot-runner:opened')),
+      'true',
+      'Space resets the isolated demo marker',
+    );
     await page.evaluate(() => localStorage.setItem('demo:animation-shot-runner:extra', 'discard'));
     await page.getByRole('link', {name: 'Start for real'}).click();
     await page.waitForURL(`${origin}/`);

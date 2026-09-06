@@ -141,7 +141,10 @@ if (document.body.dataset.demo === 'true') {
   try { localStorage.setItem(DEMO_KEY, 'true'); } catch {}
   reset?.addEventListener('click', () => {
     try { localStorage.removeItem(DEMO_KEY); localStorage.setItem(DEMO_KEY, 'true'); } catch {}
-    if (demoNotice) demoNotice.textContent = 'Sample view reset. Run the command again to create a new temporary folder.';
+    if (demoNotice) {
+      demoNotice.dataset.resetComplete = 'true';
+      demoNotice.textContent = 'Sample view reset. Run the command again to create a new temporary folder.';
+    }
   });
   startReal?.addEventListener('click', event => {
     event.preventDefault();

@@ -3,6 +3,24 @@ use std::{fs, process::Command};
 use tempfile::tempdir;
 
 #[test]
+fn help_describes_the_runner_boundary_without_claiming_renderer_network_control() {
+    let output = Command::new(env!("CARGO_BIN_EXE_shot-runner"))
+        .arg("--help")
+        .output()
+        .expect("read installed CLI help");
+    assert!(output.status.success());
+    let help = String::from_utf8(output.stdout).expect("help is UTF-8");
+    assert!(
+        help.contains("No shell is used to interpret manifest commands."),
+        "help explains how manifest command parts are executed"
+    );
+    assert!(
+        !help.to_ascii_lowercase().contains("no network"),
+        "help must not claim control over an approved renderer's network use"
+    );
+}
+
+#[test]
 fn demo_renders_five_bundled_shots_in_a_new_temp_folder() {
     let output = Command::new(env!("CARGO_BIN_EXE_shot-runner"))
         .args(["--json", "demo"])

@@ -13,7 +13,7 @@ use std::{
     name = "shot-runner",
     version,
     about = "Repeatable local preview renders, contact sheets, and receipts",
-    long_about = "Shot Runner executes tokenized renderer commands from a JSON manifest only after explicit confirmation and allowlisting. It stores frames locally, caches by source content, and writes verifiable receipts. No shell and no network are used."
+    long_about = "Shot Runner executes tokenized renderer commands from a JSON manifest only after explicit confirmation and allowlisting. It stores frames locally, caches by source content, and writes verifiable receipts. No shell is used to interpret manifest commands."
 )]
 struct Cli {
     #[arg(long, global = true, help = "Print machine-readable JSON")]
